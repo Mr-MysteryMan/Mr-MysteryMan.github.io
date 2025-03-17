@@ -1,0 +1,710 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>编译器设计文档 | hahaha</title><meta name="author" content="Mr-MysteryMan"><meta name="copyright" content="Mr-MysteryMan"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="编译器设计文档参考编译器介绍本次实验预备阶段主要学习参考了经典的Pascal编译器，现进行一定的介绍。 总体结构课程组提供的Pascal编译器总体结构为词法分析、语法分析、错误处理、语义分析、代码生成和代码优化六个部分。 接口设计该编译器并未进行模块化设计，而是将各函数放在一个文件下，在调用时设定形参实参进行数据的交互。主要函数如下：  nextch 读取下一个字符 test 检查符号合法性 er">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译器设计文档">
+<meta property="og:url" content="http://example.com/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/index.html">
+<meta property="og:site_name" content="hahaha">
+<meta property="og:description" content="编译器设计文档参考编译器介绍本次实验预备阶段主要学习参考了经典的Pascal编译器，现进行一定的介绍。 总体结构课程组提供的Pascal编译器总体结构为词法分析、语法分析、错误处理、语义分析、代码生成和代码优化六个部分。 接口设计该编译器并未进行模块化设计，而是将各函数放在一个文件下，在调用时设定形参实参进行数据的交互。主要函数如下：  nextch 读取下一个字符 test 检查符号合法性 er">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/wuhui/11.png">
+<meta property="article:published_time" content="2025-03-17T14:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-17T11:47:28.065Z">
+<meta property="article:author" content="Mr-MysteryMan">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="C">
+<meta property="article:tag" content="Mips">
+<meta property="article:tag" content="LLVMIR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/wuhui/11.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "编译器设计文档",
+  "url": "http://example.com/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/",
+  "image": "http://example.com/img/wuhui/11.png",
+  "datePublished": "2025-03-17T14:00:00.000Z",
+  "dateModified": "2025-03-17T11:47:28.065Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Mr-MysteryMan",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/logo.png"><link rel="canonical" href="http://example.com/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '编译器设计文档',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/post-background.css"><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-color: #efefef;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/loading.gif" data-original="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/wuhui/11.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">hahaha</span></a><a class="nav-page-title" href="/"><span class="site-name">编译器设计文档</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">编译器设计文档</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-17T14:00:00.000Z" title="发表于 2025-03-17 22:00:00">2025-03-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-17T11:47:28.065Z" title="更新于 2025-03-17 19:47:28">2025-03-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">17.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>58分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="编译器设计文档"><a href="#编译器设计文档" class="headerlink" title="编译器设计文档"></a>编译器设计文档</h1><h2 id="参考编译器介绍"><a href="#参考编译器介绍" class="headerlink" title="参考编译器介绍"></a>参考编译器介绍</h2><p>本次实验预备阶段主要学习参考了经典的Pascal编译器，现进行一定的介绍。</p>
+<h3 id="总体结构"><a href="#总体结构" class="headerlink" title="总体结构"></a>总体结构</h3><p>课程组提供的Pascal编译器总体结构为词法分析、语法分析、错误处理、语义分析、代码生成和代码优化六个部分。</p>
+<h3 id="接口设计"><a href="#接口设计" class="headerlink" title="接口设计"></a>接口设计</h3><p>该编译器并未进行模块化设计，而是将各函数放在一个文件下，在调用时设定形参实参进行数据的交互。主要函数如下：</p>
+<ul>
+<li><code>nextch</code> 读取下一个字符</li>
+<li><code>test</code> 检查符号合法性</li>
+<li><code>error</code> 打印错误信息</li>
+<li><code>typ</code>处理类型<ul>
+<li><code>typedeclaration</code>处理自定义类型</li>
+</ul>
+</li>
+<li><code>constant</code>处理常量<ul>
+<li><code>adjustscale</code>处理实数</li>
+</ul>
+</li>
+<li><code>variabledeclaration</code>处理普通变量</li>
+<li><code>procdeclaration</code>处理过程和函数<ul>
+<li><code>parameterlist</code> 处理形参</li>
+</ul>
+</li>
+<li><code>statement</code>处理各种语句</li>
+<li><code>enter</code>登记符号表<ul>
+<li><code>enterreal</code>登记实常量表</li>
+<li><code>enterarray</code>登记数组符号表</li>
+<li><code>enterblock</code>登记分程序信息入分程序表</li>
+</ul>
+</li>
+<li><code>emit</code>生成中间代码</li>
+</ul>
+<h3 id="文件组织"><a href="#文件组织" class="headerlink" title="文件组织"></a>文件组织</h3><p>该Pascal编译器全部函数均放在一个文件下，抽象化层次化程度低，复杂程度较高。实际上，可以建立库函数文件（或者像面向对象设计一样建立类，分文件调用），以此降低文件组织的耦合程度。</p>
+<hr>
+<h2 id="编译器总体设计"><a href="#编译器总体设计" class="headerlink" title="编译器总体设计"></a>编译器总体设计</h2><h3 id="总体结构-1"><a href="#总体结构-1" class="headerlink" title="总体结构"></a>总体结构</h3><p>设计的编译器主要分为前端 <code>Front</code> 、中端 <code>Middle</code> 、后端 <code>Back</code> 三个部分。</p>
+<p>其中，前端主要负责词法分析、语法分析部分，有词法分析器 <code>Lexer</code> 、语法分析器 <code>Parser</code> 。中端主要负责语义分析（符号表的构建与管理）与中间代码生成有语义分析器（符号管理器） <code>Manager</code> 、中间代码生成器 <code>Visitor</code> 、代码优化器 <code>Opitimizer</code> 。后端主要负责目标代码生成以及代码优化，有目标代码翻译器 <code>Translator</code> 、代码优化器 <code>Opitimizer</code> 。</p>
+<p>整体的结构与流程设计如下所示：</p>
+<p><img src="/img/loading.gif" data-original="/images/Compiler/编译器设计文档/编译器整体结构图.png" alt="编译器整体结构图" style="zoom: 50%;" /></p>
+<h3 id="接口设计-1"><a href="#接口设计-1" class="headerlink" title="接口设计"></a>接口设计</h3><p>前端：</p>
+<ul>
+<li><code>content</code> ：未经任何处理的待翻译程序字符串；</li>
+<li><code>tokens</code> ：经词法分析后获得的单词列表；</li>
+<li><code>AST</code> ：经语法分析后获得的抽象语法树（Abstract Syntax Tree，下简称语法树）。</li>
+</ul>
+<p>中端：</p>
+<ul>
+<li><code>tables</code> ：经语义分析后获得的符号表项列表，其中列表第一项即是全局符号表项；</li>
+<li><code>MCT</code> ：经中间代码生成后获得的中间代码树（Medium Code Tree）。</li>
+</ul>
+<p>后端：</p>
+<ul>
+<li><code>OCT</code> ：经目标代码翻译后获得的目标代码树（Object Code Tree）；</li>
+<li><code>optim</code> ：经代码优化后获得的目标代码树。</li>
+</ul>
+<h3 id="文件组织-1"><a href="#文件组织-1" class="headerlink" title="文件组织"></a>文件组织</h3><p>整体文件组织如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">├─ Front 前端处理器</span><br><span class="line">├─ Middle 中端处理器</span><br><span class="line">├─ Back 后端处理器</span><br><span class="line">├─ CompileError 编译错误与错误处理器</span><br><span class="line">└─ IO 编译器的输入输出</span><br></pre></td></tr></table></figure>
+<p>其中， <code>Front</code> 的文件组织如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">├─Lexer 词法分析</span><br><span class="line">│      Lexer.java 词法分析器类</span><br><span class="line">│      Token.java 单词类</span><br><span class="line">└─Parser 语法分析</span><br><span class="line">    │  Parser.java 语法分析器类</span><br><span class="line">    └─Syntax 语法成分</span><br><span class="line">        │  Syntax.java 语法成分接口</span><br><span class="line">        ├─Block 块</span><br><span class="line">        │      Block.java 块类</span><br><span class="line">        │      BlockItem.java 语句块项类</span><br><span class="line">        ├─Const 常量</span><br><span class="line">        │      IntConst.java 数字常量类</span><br><span class="line">        │      CharConst.java 字符常量类</span><br><span class="line">        │      StringConst.java 字符串常量类</span><br><span class="line">        ├─Decl 声明</span><br><span class="line">        │      Decl.java 声明类</span><br><span class="line">        │      ConstDecl.java 常量声明类</span><br><span class="line">        │      VarDecl.java 变量声明类</span><br><span class="line">        ├─Def 定义</span><br><span class="line">        │      ConstDef.java 常量定义类</span><br><span class="line">        │      FuncDef.java 函数定义类</span><br><span class="line">        │      MainFuncDef.java 主函数定义类</span><br><span class="line">        │      VarDef.java 变量定义类</span><br><span class="line">        ├─Expr 表达式</span><br><span class="line">        │      LOrExpr.java 逻辑或表达式类</span><br><span class="line">        │      LAndExpr.java 逻辑与表达式类</span><br><span class="line">        │      EqExpr.java 相等性表达式类</span><br><span class="line">        │      RelExpr.java 关系表达式</span><br><span class="line">        │      Expr.java 普通表达式类</span><br><span class="line">        │      ConstExpr.java 常量表达式类</span><br><span class="line">        │      AddExpr.java 加减表达式类</span><br><span class="line">        │      MulExpr.java 乘除模表达式类</span><br><span class="line">        │      UnaryExpr.java 一元表达式类</span><br><span class="line">        │      PrimaryExpr.java 基本表达式类</span><br><span class="line">        ├─Param 参数</span><br><span class="line">        │      FuncFParams.java 函数形参表类</span><br><span class="line">        │      FuncFParam.java 函数形参</span><br><span class="line">        │      FuncRParams.java 函数实参表类</span><br><span class="line">        ├─Reserved 保留元素</span><br><span class="line">        │      Number.java 数字类</span><br><span class="line">        │      Character.java 字符类</span><br><span class="line">        │      Ident.java 标识符类</span><br><span class="line">        │      ReservedWord.java 保留字类</span><br><span class="line">        │      UnaryOp.java 一元操作符类</span><br><span class="line">        ├─Stmt 语句</span><br><span class="line">        │      Cond.java 条件类</span><br><span class="line">        │      ForStmt.java for语句类</span><br><span class="line">        │      Stmt.java 语句类</span><br><span class="line">        ├─Type 类型</span><br><span class="line">        │      BType.java 数据类型类</span><br><span class="line">        │      FuncType.java 函数类型类</span><br><span class="line">        ├─Unit 单元</span><br><span class="line">        │      CompUnit.java 编译单元类 </span><br><span class="line">        └─Val 值</span><br><span class="line">                ConstInitVal.java 常量初值</span><br><span class="line">                InitVal.java 变量初值</span><br><span class="line">                LVal.java 左值表达式</span><br></pre></td></tr></table></figure>
+<p><code>Middle</code> 的文件组织如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">├─Manager 符号管理</span><br><span class="line">│  │  Manager.java 符号管理类</span><br><span class="line">│  │  Table.java 符号表项类</span><br><span class="line">│  │  TableViewer.java 符号表观察类</span><br><span class="line">│  └─Symbols 符号</span><br><span class="line">│          Symbol.java 符号类</span><br><span class="line">│          ArraySymbol.java 数组符号类</span><br><span class="line">│          FuncSymbol.java 函数符号类</span><br><span class="line">│          VarSymbol.java 普通变量常量类</span><br><span class="line">└─Visitor 中间代码生成</span><br><span class="line">    │  Visitor.java 中间代码生成器类</span><br><span class="line">    │  VisitorFeature.java 中间代码生成器特征类</span><br><span class="line">    └─LLVMIR 中间代码生成LLVMIR预备部分</span><br><span class="line">        ├─TypeIR MCT节点类型</span><br><span class="line">        │  │  ValueTypeIR.java MCT节点类型类</span><br><span class="line">        │  ├─BasicType 基础类型</span><br><span class="line">        │  │      IntegerTypeIR.java int/char/bool数据类型类</span><br><span class="line">        │  │      LabelTypeIR.java 标签类</span><br><span class="line">        │  │      VoidTypeIR.java void数据类型类</span><br><span class="line">        │  └─CompType 复合类型</span><br><span class="line">        │          ArrayTypeIR.java 数组类型类</span><br><span class="line">        │          FunctionTypeIR.java 函数类型类</span><br><span class="line">        │          PointerTypeIR.java 指针类型类</span><br><span class="line">        └─ValueIR MCT节点</span><br><span class="line">            │  IR.java MCT节点接口</span><br><span class="line">            │  ValueIR.java MCT值类</span><br><span class="line">            ├─Component 中间代码组成</span><br><span class="line">            │      BasicBlockIR.java 中间代码块类</span><br><span class="line">            │      FunctionIR.java 中间代码函数类</span><br><span class="line">            │      ModuleIR.java 中间代码模块类</span><br><span class="line">            ├─Constant 中间代码常数</span><br><span class="line">            │      ConstantArrayIR.java 常数组类</span><br><span class="line">            │      ConstantIR.java 常数类</span><br><span class="line">            │      ConstantStringIR.java 常字符串类</span><br><span class="line">            ├─Instruction 中间代码指令</span><br><span class="line">            │  │  InstructionIR.java 中间代码类</span><br><span class="line">            │  ├─calculate 计算指令</span><br><span class="line">            │  │      BinaryIR.java 二元计算类</span><br><span class="line">            │  │      BTypeTranIR.java 数据类型转换类</span><br><span class="line">            │  │      IcmpIR.java 比较类</span><br><span class="line">            │  ├─jump 跳转指令</span><br><span class="line">            │  │      BrIR.java 跳转类</span><br><span class="line">            │  │      RetIR.java 返回类</span><br><span class="line">            │  └─memory 内存指令</span><br><span class="line">            │          AllocateIR.java 申请内存类</span><br><span class="line">            │          CallIR.java 调用函数类</span><br><span class="line">            │          GetElementIR.java 计算数组元素地址类</span><br><span class="line">            │          LoadIR.java 加载类</span><br><span class="line">            │          StoreIR.java 存储类</span><br><span class="line">            └─Variable 中间代码变量</span><br><span class="line">                    GlobalVariableIR.java 中间代码全局声明类</span><br><span class="line">                    VariableIR.java 变量类</span><br></pre></td></tr></table></figure>
+<p><code>Back</code> 的文件组织如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">├─Optimizer 代码优化</span><br><span class="line">│      Optimizer.java 优化器类</span><br><span class="line">└─Translator 目标代码生成</span><br><span class="line">    │  Translator.java 目标代码翻译器类</span><br><span class="line">    ├─Mips 目标代码生成MIPS预备部分</span><br><span class="line">    │  │  Mips.java OCT节点类</span><br><span class="line">    │  ├─Component 目标代码组成</span><br><span class="line">    │  │      BlockMips.java 目标代码块类</span><br><span class="line">    │  │      FunctionMips.java 目标代码函数类</span><br><span class="line">    │  │      GlobalMips.java 目标代码全局声明类</span><br><span class="line">    │  │      ModuleMips.java 目标代码模块类</span><br><span class="line">    │  │      SymbolMips.java 目标代码符号类</span><br><span class="line">    │  └─Instruction 目标代码指令</span><br><span class="line">    │      │  InstrMips.java 目标代码指令类</span><br><span class="line">    │      ├─address 地址类指令</span><br><span class="line">    │      │      LwMips.java 加载字类</span><br><span class="line">    │      │      SwMips.java 存储字类</span><br><span class="line">    │      ├─assign 赋值类指令</span><br><span class="line">    │      │      LaMips.java 赋地址值类</span><br><span class="line">    │      │      LiMips.java 赋数值类</span><br><span class="line">    │      │      MfloMips.java 读lo寄存器值类</span><br><span class="line">    │      │      MfhiMips.java 读hi寄存器值类</span><br><span class="line">    │      │      MoveMips.java 赋寄存器值类</span><br><span class="line">    │      ├─binary 二元计算指令</span><br><span class="line">    │      │      AddiuMips.java 带立即数的无符号加法类</span><br><span class="line">    │      │      AdduMips.java 二元无符号加法类</span><br><span class="line">    │      │      SubuMips.java 二元无符号减法类</span><br><span class="line">    │      │      MultMips.java 二元有符号乘法类</span><br><span class="line">    │      │      DivMips.java 二元有符号除法类</span><br><span class="line">    │      │      SltMips.java 二元有符号比较类</span><br><span class="line">    │      ├─bitcalculate 位运算指令</span><br><span class="line">    │      │      AndIMips.java 带立即数的与运算类</span><br><span class="line">    │      │      SllMips.java 逻辑左移类</span><br><span class="line">    │      │      SraMips.java 算术右移类</span><br><span class="line">    │      │      SrlMips.java 逻辑右移类</span><br><span class="line">    │      ├─jump 跳转指令</span><br><span class="line">    │      │      BeqMips.java 相等时跳转立即数地址类</span><br><span class="line">    │      │      BneMips.java 不等时跳转立即数地址类</span><br><span class="line">    │      │      BgezMips.java 大于等于0时跳转立即数地址类</span><br><span class="line">    │      │      BlezMips.java 小于等于0时跳转立即数地址类</span><br><span class="line">    │      │      BgtzMips.java 大于0时跳转立即数地址类</span><br><span class="line">    │      │      BltzMips.java 小于0时跳转立即数地址类</span><br><span class="line">    │      │      JalMips.java 跳转立即数地址并链接类</span><br><span class="line">    │      │      JMips.java 跳转立即数地址类</span><br><span class="line">    │      │      JrMips.java 跳转寄存器地址类</span><br><span class="line">    │      └─system 系统指令</span><br><span class="line">    │              SyscallMips.java 系统调用类</span><br><span class="line">    └─Register 寄存器</span><br><span class="line">            Register.java 寄存器类</span><br><span class="line">            RegisterTable.java 寄存器表类</span><br></pre></td></tr></table></figure>
+<p><code>CompilerError</code> 的文件组织如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CompileError.java 编译错误类</span><br><span class="line">   Judgement.java 错误处理类</span><br></pre></td></tr></table></figure>
+<p><code>IO</code> 的文件组织如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Printer.java 输出解析类</span><br><span class="line">   Reader.java 输入解析类</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="词法分析设计"><a href="#词法分析设计" class="headerlink" title="词法分析设计"></a>词法分析设计</h2><p>源程序读入后作为长字符串存储在编译器中。词法分析部分的主要任务是将源程序字符串转化为单词。</p>
+<p>首先应该建立单词类 <code>Token</code> 。在单词中，应当包含该单词种类、所在行、单词内容。因此设计单词类 <code>Token</code> ，其中包含属性 <code>token</code>、<code>lineNum</code>、<code>type</code>，用于存储必要信息。</p>
+<p>在词法分析器 <code>Lexer</code> 中，读入源程序字符串，目标是生成单词列表。其中，部分单词是保留词，需要设置为相应类型。为防止无法分别标识符和部分保留词，首先应建立保留词表，以便分析出新单词后正确判断其类型。开始分析后，可以按照以下分类分析字符串：</p>
+<ul>
+<li>当前字符是数字：那么下一个单词是数字常量。继续读入字符，直至该字符不是数字为止。该段字符串即是下一个单词，该单词的单词内容即是该段字符串，该单词的类型是 <code>INTCON</code> 。</li>
+<li>当前字符是 <code>\&quot;</code> 或 <code>\&#39;</code> ：那么下一个单词是字符串常量或者字符常量。继续读入字符，直至该字符不是对应的 <code>&quot;</code> 或 <code>&#39;</code> 为止。应注意，在读入字符时，有可能出现转义字符 <code>\&quot;</code> 或 <code>\&#39;</code> ，需要进行特殊判断（当前字符是 <code>\</code> 时下一个字符是否是 <code>&quot;</code> 或 <code>&#39;</code> ），不能作为字符或字符串结束标志。该段字符串即是下一个单词，该单词的单词内容即是该段字符串，该单词的类型是 <code>STRCON</code> 或 <code>CHRCON</code> 。</li>
+<li>当前字符是字母或 <code>_</code> ：那么下一个单词是标识符或保留字。继续读入字符，直至该字符不是字母、数字或 <code>_</code> 。将该段字符串内容和保留词表比对，判断是否是保留词以及是什么类型的保留词。该段字符串即是下一个单词，该单词的单词内容即是该段字符串，该单词的类型是 <code>IDENFR</code> 或相应的保留词类型。</li>
+<li>当前字符是 <code>+-*%;,()[]&#123;&#125;</code> ：那么下一个单词是保留词。这些字符是保证只能单独出现的保留词，因此直接将该字符与保留词表比对，判断是什么类型的保留词。</li>
+<li>当前字符是 <code>!=&gt;&lt;</code> ：那么下一个单词是保留词。这些字符可能组合出现，产生不同于当前字符含义的保留词。继续读入字符，直至该字符不是这些字符。将该段字符串内容和保留词表比对，判断是什么类型保留词。</li>
+<li>当前字符是 <code>&amp;|</code> ：那么下一个单词是保留词。由于该字符可能出现错误，因此单列出来考虑。继续读入字符，若该字符与当前字符不同，词法分析部分出现错误；若相同则与保留词表比对，判断是什么类型保留词。该单词的类型是 <code>AND</code> 或 <code>OR</code> 。</li>
+<li>当前字符是 <code>/</code> ：那么接下来可能是保留词 <code>/</code> 或注释 <code>//</code> 、 <code>/**/</code> 。读入下一个字符，若该字符是 <code>/</code> 或 <code>*</code> ，那么接下来是注释，若不是，则是保留词 <code>/</code> ，类型为 <code>DIV</code>  。如果这两个字符是 <code>//</code> ，继续读入字符，直至读入 <code>\n</code> ；如果这两个字符是 <code>/*</code> ，继续读入字符，直至读入 <code>*/</code> 。 </li>
+<li>当前字符是 <code>\n</code> ：源程序进行了换行，当前行数加一。</li>
+<li>当前字符是其他字符：跳过即可。</li>
+</ul>
+<p>获得单词后，将其存入单词列表 <code>tokens</code> 中，并正确输出结果。</p>
+<hr>
+<h2 id="语法分析设计"><a href="#语法分析设计" class="headerlink" title="语法分析设计"></a>语法分析设计</h2><p>词法分析部分分析出的单词列表存储在编译器中。语法分析部分的主要任务是按照 <code>SysY</code> 语言文法自顶向下将单词列表转化为语法树。</p>
+<p><code>SysY</code> 语言文法如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">编译单元 CompUnit → &#123;Decl&#125; &#123;FuncDef&#125; MainFuncDef </span><br><span class="line">声明 Decl → ConstDecl | VarDecl </span><br><span class="line">常量声明 ConstDecl → <span class="string">&#x27;const&#x27;</span> BType ConstDef &#123; <span class="string">&#x27;,&#x27;</span> ConstDef &#125; <span class="string">&#x27;;&#x27;</span></span><br><span class="line">基本类型 BType → <span class="string">&#x27;int&#x27;</span> | <span class="string">&#x27;char&#x27;</span> </span><br><span class="line">常量定义 ConstDef → Ident [ <span class="string">&#x27;[&#x27;</span> ConstExp <span class="string">&#x27;]&#x27;</span> ] <span class="string">&#x27;=&#x27;</span> ConstInitVal</span><br><span class="line">常量初值 ConstInitVal → ConstExp | <span class="string">&#x27;&#123;&#x27;</span> [ ConstExp &#123; <span class="string">&#x27;,&#x27;</span> ConstExp &#125; ] <span class="string">&#x27;&#125;&#x27;</span> | StringConst</span><br><span class="line">变量声明 VarDecl → BType VarDef &#123; <span class="string">&#x27;,&#x27;</span> VarDef &#125; <span class="string">&#x27;;&#x27;</span></span><br><span class="line">变量定义 VarDef → Ident [ <span class="string">&#x27;[&#x27;</span> ConstExp <span class="string">&#x27;]&#x27;</span> ] | Ident [ <span class="string">&#x27;[&#x27;</span> ConstExp <span class="string">&#x27;]&#x27;</span> ] <span class="string">&#x27;=&#x27;</span> InitVal</span><br><span class="line">变量初值 InitVal → Exp | <span class="string">&#x27;&#123;&#x27;</span> [ Exp &#123; <span class="string">&#x27;,&#x27;</span> Exp &#125; ] <span class="string">&#x27;&#125;&#x27;</span> | StringConst </span><br><span class="line">函数定义 FuncDef → FuncType Ident <span class="string">&#x27;(&#x27;</span> [FuncFParams] <span class="string">&#x27;)&#x27;</span> Block</span><br><span class="line">主函数定义 MainFuncDef → <span class="string">&#x27;int&#x27;</span> <span class="string">&#x27;main&#x27;</span> <span class="string">&#x27;(&#x27;</span> <span class="string">&#x27;)&#x27;</span> Block</span><br><span class="line">函数类型 FuncType → <span class="string">&#x27;void&#x27;</span> | <span class="string">&#x27;int&#x27;</span> | <span class="string">&#x27;char&#x27;</span></span><br><span class="line">函数形参表 FuncFParams → FuncFParam &#123; <span class="string">&#x27;,&#x27;</span> FuncFParam &#125; </span><br><span class="line">函数形参 FuncFParam → BType Ident [<span class="string">&#x27;[&#x27;</span> <span class="string">&#x27;]&#x27;</span>]</span><br><span class="line">语句块 Block → <span class="string">&#x27;&#123;&#x27;</span> &#123; BlockItem &#125; <span class="string">&#x27;&#125;&#x27;</span> </span><br><span class="line">语句块项 BlockItem → Decl | Stmt </span><br><span class="line">语句 Stmt → LVal <span class="string">&#x27;=&#x27;</span> Exp <span class="string">&#x27;;&#x27;</span></span><br><span class="line">| [Exp] <span class="string">&#x27;;&#x27;</span></span><br><span class="line">| Block</span><br><span class="line">| <span class="string">&#x27;if&#x27;</span> <span class="string">&#x27;(&#x27;</span> Cond <span class="string">&#x27;)&#x27;</span> Stmt [ <span class="string">&#x27;else&#x27;</span> Stmt ]</span><br><span class="line">| <span class="string">&#x27;for&#x27;</span> <span class="string">&#x27;(&#x27;</span> [ForStmt] <span class="string">&#x27;;&#x27;</span> [Cond] <span class="string">&#x27;;&#x27;</span> [ForStmt] <span class="string">&#x27;)&#x27;</span> Stmt </span><br><span class="line">| <span class="string">&#x27;break&#x27;</span> <span class="string">&#x27;;&#x27;</span> | <span class="string">&#x27;continue&#x27;</span> <span class="string">&#x27;;&#x27;</span></span><br><span class="line">| <span class="string">&#x27;return&#x27;</span> [Exp] <span class="string">&#x27;;&#x27;</span></span><br><span class="line">| LVal <span class="string">&#x27;=&#x27;</span> <span class="string">&#x27;getint&#x27;</span><span class="string">&#x27;(&#x27;</span><span class="string">&#x27;)&#x27;</span><span class="string">&#x27;;&#x27;</span></span><br><span class="line">| LVal <span class="string">&#x27;=&#x27;</span> <span class="string">&#x27;getchar&#x27;</span><span class="string">&#x27;(&#x27;</span><span class="string">&#x27;)&#x27;</span><span class="string">&#x27;;&#x27;</span></span><br><span class="line">| <span class="string">&#x27;printf&#x27;</span><span class="string">&#x27;(&#x27;</span>StringConst &#123;<span class="string">&#x27;,&#x27;</span>Exp&#125;<span class="string">&#x27;)&#x27;</span><span class="string">&#x27;;&#x27;</span></span><br><span class="line">语句 ForStmt → LVal <span class="string">&#x27;=&#x27;</span> Exp </span><br><span class="line">表达式 Exp → AddExp </span><br><span class="line">条件表达式 Cond → LOrExp </span><br><span class="line">左值表达式 LVal → Ident [<span class="string">&#x27;[&#x27;</span> Exp <span class="string">&#x27;]&#x27;</span>]</span><br><span class="line">基本表达式 PrimaryExp → <span class="string">&#x27;(&#x27;</span> Exp <span class="string">&#x27;)&#x27;</span> | LVal | Number | Character</span><br><span class="line">数值 Number → IntConst </span><br><span class="line">字符 Character → CharConst </span><br><span class="line">一元表达式 UnaryExp → PrimaryExp | Ident <span class="string">&#x27;(&#x27;</span> [FuncRParams] <span class="string">&#x27;)&#x27;</span> | UnaryOp UnaryExp </span><br><span class="line">单目运算符 UnaryOp → <span class="string">&#x27;+&#x27;</span> | <span class="string">&#x27;−&#x27;</span> | <span class="string">&#x27;!&#x27;</span> 注：<span class="string">&#x27;!&#x27;</span>仅出现在条件表达式中 </span><br><span class="line">函数实参表 FuncRParams → Exp &#123; <span class="string">&#x27;,&#x27;</span> Exp &#125; </span><br><span class="line">乘除模表达式 MulExp → UnaryExp | MulExp (<span class="string">&#x27;*&#x27;</span> | <span class="string">&#x27;/&#x27;</span> | <span class="string">&#x27;%&#x27;</span>) UnaryExp </span><br><span class="line">加减表达式 AddExp → MulExp | AddExp (<span class="string">&#x27;+&#x27;</span> | <span class="string">&#x27;−&#x27;</span>) MulExp </span><br><span class="line">关系表达式 RelExp → AddExp | RelExp (<span class="string">&#x27;&lt;&#x27;</span> | <span class="string">&#x27;&gt;&#x27;</span> | <span class="string">&#x27;&lt;=&#x27;</span> | <span class="string">&#x27;&gt;=&#x27;</span>) AddExp </span><br><span class="line">相等性表达式 EqExp → RelExp | EqExp (<span class="string">&#x27;==&#x27;</span> | <span class="string">&#x27;!=&#x27;</span>) RelExp </span><br><span class="line">逻辑与表达式 LAndExp → EqExp | LAndExp <span class="string">&#x27;&amp;&amp;&#x27;</span> EqExp</span><br><span class="line">逻辑或表达式 LOrExp → LAndExp | LOrExp <span class="string">&#x27;||&#x27;</span> LAndExp</span><br><span class="line">常量表达式 ConstExp → AddExp 注：使用的 Ident 必须是常量</span><br></pre></td></tr></table></figure>
+<p>首先应该建立语法成分接口 <code>Syntax</code> 。后续建立语法树 <code>AST</code> 时所有节点都应该实现 <code>Syntax</code> 接口，以保证统一性。对于每一个语法成分，都应建立一个类，存储它作为语法树节点所有的子节点。</p>
+<p>在语法分析器 <code>Parser</code> 中，读入单词列表，目标是生成语法树。按照 <code>SysY</code> 语言文法，自顶向下为每个节点类建立分析函数。同时为了不进行回溯，应在每个分析函数开始部分建立是否为当前语法成分的判断部分（判断首单词是否符合当前推导规则）：</p>
+<ul>
+<li><code>CompUnit</code> ：语法树的最顶层节点，代表整个待编译程序。其子节点可能为 <code>Decl</code> 、 <code>FuncDef</code> 、 <code>MainFuncDef</code> ，其中，前两部分可能存在若干次，因此使用 <code>for</code>  循环进行解析，直至无法解析出 <code>Decl</code> 或 <code>FuncDef</code> 。对于第三部分  <code>MainFuncDef</code> ，直接解析即可。</li>
+<li><code>Decl</code> ：代表声明部分，分为常量声明 <code>ConstDecl</code> 和变量声明 <code>VarDecl</code> 。先假定为常量声明进行解析，若返回值为空，按照变量声明解析即可。</li>
+<li><code>FuncDef</code> ：代表普通函数（非主函数）声明部分。当需要解析函数时，首先应该判断是否符合函数定义格式以及是否是主函数。对于函数定义，最大的特征标识是函数名标识符 <code>Ident</code> 后的小括号 <code>(</code> ，如果成立则可以判定为函数。对于是否是主函数的判定，只需要判定函数名标识符 <code>Ident</code> 是否是 <code>main</code> 即可。判定确实为普通函数后，存储该函数的函数类型 <code>FuncType</code> 、函数名标识符 <code>Ident</code> ，并对标识符后的函数形参进行解析及存储（存储形参个数、形参名、形参类型等）。之后对函数主体的块 <code>Block</code> 进行解析即可完成整个函数的解析。</li>
+<li><code>MainFuncDef</code> ：代表主函数声明部分。其大体流程与普通函数声明部分相似：判断是否符合函数定义格式以及是否是主函数。对于函数定义，最大的特征标识是函数名标识符 <code>Ident</code> 后的括号 <code>(</code> ，如果成立则可以判定为函数。对于是否是主函数的判定，只需要判定函数名标识符 <code>Ident</code> 是否是 <code>main</code> 即可。需注意，二者都必须进行，否则可能出现被命名为 <code>main</code> 的变量被判定为主函数而导致的解析错误。判定为主函数后，存储相应函数信息，不需要对函数形参进行解析，直接对函数主体的块 <code>Block</code> 进行解析即可完成整个主函数的解析。</li>
+<li><code>Block</code> ：代表由大括号包覆的块。其内部含有若干各块组成 <code>BlockItem</code> ，因此使用 <code>for</code>  循环进行解析，直至无法解析出 <code>BlockItem</code> （实际上是到达块的后一个大括号 <code>&#125;</code> ）。最后，将块的后一个大括号 <code>&#125;</code> 解析即可。</li>
+<li><code>ConstDecl</code> ：代表常量声明部分。首先应通过当前单词是否是 <code>const</code> 判断是否是常量定义，若不是常量定义则返回空值。如果是常量定义，则存储之后定义的常量的数据类型 <code>BType</code> 。由于一句常量声明中可以存在多条常量定义语句，因此使用 <code>for</code>  循环进行解析，直至无法解析出 <code>ConstDef</code> 。</li>
+<li><code>VarDecl</code> ：代表变量声明部分。首先应当判定是否是变量定义：当前单词应该是变量的数据类型 <code>BType</code> ，且不应该出现 <code>BType Ident (</code> 的情况。如果是变量定义，则存储之后定义的变量的数据类型 <code>BType</code> 。由于一句变量声明中可以存在多条变量定义语句，因此使用 <code>for</code>  循环进行解析，直至无法解析出 <code>VarDef</code> 。</li>
+<li><code>ConstDef</code> ：代表常量定义部分。首先需要判断是否是常量定义，由于 <code>ConstDef</code> 只能从 <code>ConstDecl</code> 获得，因此只需要通过是否存在定义常量标识符 <code>Ident</code> 判定是否是定义语句即可。如果是常量定义，则存储当前常量标识符 <code>Ident</code> 。该标识符所代表常量可能是常量数组，需要通过标识符后是否是中括号 <code>[</code> 来判断。如果该常量是常量数组，则需要对中括号 <code>[</code> 后的常量表达式 <code>ConstExp</code> 进行解析，以获得该数组的元素个数。如果不是常量数组，正常进行后续操作即可。对于常量定义部分，还需要解析为定义常量所赋的初值。对等号 <code>=</code> 后的常量表达式 <code>ConstExp</code> 进行解析并存储即可。</li>
+<li><code>VarDef</code> ：代表变量定义部分。首先需要判断是否是变量定义，由于 <code>VarDef</code> 只能从 <code>VarDecl</code> 获得，因此只需要通过是否存在定义变量标识符 <code>Ident</code> 判定是否是定义语句即可。如果是变量定义，则存储当前变量标识符 <code>Ident</code> 。该标识符所代表变量可能是变量数组，需要通过标识符后是否是中括号 <code>[</code> 来判断。如果该变量是变量数组，则需要对中括号 <code>[</code> 后的变量表达式 <code>VarExp</code> 进行解析，以获得该数组的元素个数。如果不是变量数组，正常进行后续操作即可。对于变量定义部分，还需要判定是否存在为定义变量赋初值的情况，通过标识符 <code>Ident</code> 或中括号 <code>]</code> 后是否存在等号 <code>=</code> 来判断。如果存在，解析为定义变量所赋的初值。对等号 <code>=</code> 后的普通表达式 <code>Exp</code> 进行解析并存储即可。</li>
+<li><code>ConstInitVal</code> ：代表常量定义时的初值，可能为字符串常量，常量数组元素集合，常量表达式。对于字符串常量，直接存储即可。对于数组元素集合，通过大括号 <code>&#123;</code> 来判定，如果是则解析后续出现的若干常量表达式即可；对于常量表达式，直接解析即可。</li>
+<li><code>InitVal</code> ：代表变量定义时的初值，可能为字符串常量，变量数组元素集合，普通表达式。对于字符串常量，直接存储即可。对于数组元素集合，通过大括号 <code>&#123;</code> 来判定，如果是则解析后续出现的若干普通表达式即可；对于普通表达式，直接解析即可。</li>
+<li><code>FuncFParams</code> ：代表函数形参声明部分。函数形参声明可能有若干形参，因此使用 <code>for</code>  循环进行解析，直至无法解析出  <code>FuncFParam</code> 为止。根据解析出的形参个数，判定是否存在函数形参声明部分。即如果解析出的形参个数为0，则不存在函数形参部分。</li>
+<li><code>FuncFParam</code> ：代表每个函数形参的定义部分。对于每个函数形参的定义，存储该形参的数据类型 <code>BType</code> 和形参标识符 <code>Ident</code> 。部分形参可能是数组（实际上是有着数组形式的指针），识别标识符后的中括号 <code>[]</code> ，并将类型存储。</li>
+<li><code>BlockItem</code> ：代表每个块组成。其可能是声明 <code>Decl</code> 或语句 <code>Stmt</code> 。先假定为声明进行解析，若返回值为空，按照语句解析即可。</li>
+<li><code>Stmt</code> ：代表块中可能出现的语句，推导规则比较复杂，大体可以分为三类：赋值型，特殊功能型，块或表达式。对于赋值型，即 <code>LVal &#39;=&#39; Exp &#39;;&#39;</code> , <code>LVal &#39;=&#39; &#39;getint&#39;&#39;(&#39;&#39;)&#39;&#39;;&#39;</code> , <code>LVal &#39;=&#39; &#39;getchar&#39;&#39;(&#39;&#39;)&#39;&#39;;&#39;</code> ，需要通过等号 <code>=</code> 来判定，如果是赋值型，直接存储即可；如果不是赋值型，此时已经对左值表达式 <code>LVal</code> 进行了解析，需要进行回溯，因此在解析前应保留解析位置，以便后期回溯。对于特殊型，可以直接通过关键词判断类型： <code>&#39;if&#39; &#39;(&#39; Cond &#39;)&#39; Stmt [ &#39;else&#39; Stmt ]</code> 可以通过 <code>if</code> 判定，并解析 <code>if</code> 的条件 <code>Cond</code> 和需要执行的语句 <code>Stmt</code> ，如果存在 <code>else</code> ，则额外解析 <code>else</code> 需要执行的语句 <code>Stmt</code> ； <code>&#39;for&#39; &#39;(&#39; [ForStmt] &#39;;&#39; [Cond] &#39;;&#39; [ForStmt] &#39;)&#39; Stmt</code> 可以通过 <code>for</code> 判定，并解析 <code>for</code> 的条件 <code>Cond</code> 和两个 <code>for</code> 语句 <code>ForStmt</code> （如果存在的话），以及需要执行的语句 <code>Stmt</code> ；<code>&#39;;&#39;</code> 、 <code>&#39;break&#39; &#39;;&#39;</code> 和 <code>&#39;continue&#39; &#39;;&#39;</code> 语句中全部是保留词，直接解析即可； <code>&#39;return&#39; [Exp] &#39;;&#39;</code> 可以通过 <code>return</code> 判定，并解析之后可能出现的表达式 <code>Exp</code> ；<code>&#39;printf&#39;&#39;(&#39;StringConst &#123;&#39;,&#39;Exp&#125;&#39;)&#39;&#39;;&#39;</code> 可以通过 <code>printf</code> 判定，存储保留词和字符串常量，并解析之后可能出现的若干表达式 <code>Exp</code> 。对于块或表达式，在排除上述所有情况后，直接解析即可，不会再出现需要回溯的情况。</li>
+<li><code>ForStmt</code> ：代表 <code>for</code> 语句，只可能出现左值表达式的赋值。因此解析被赋值的左值表达式 <code>LVal</code> 和待赋值的普通表达式 <code>Exp</code> 即可。需注意，判定是 <code>ForStmt</code> 的标识是赋值的等号 <code>=</code> ，此时已经对左值表达式 <code>LVal</code> 进行了解析，如果不是 <code>ForStmt</code> 则需要进行回溯，因此在解析前应保留解析位置，以便后期回溯。</li>
+<li><code>Cond</code> ：代表各类语句的条件，只能是逻辑表达式，按照文法，只能是逻辑或表达式 <code>LOrExp</code> 。因此，直接按照逻辑或表达式 <code>LOrExp</code> 对其解析即可。</li>
+<li><code>LOrExp</code> ：代表逻辑或表达式，由逻辑或表达式 <code>LOrExp</code> 、逻辑或符号 <code>||</code> 、逻辑与表达式 <code>LAndExp</code> 组成。由于该文法是左递归文法，如果直接解析会出现无限下降的问题。因此，改写文法，先解析逻辑与表达式 <code>LAndExp</code> ，如果存在逻辑或符号 <code>||</code> ，则将其种类变换为逻辑或表达式 <code>LOrExp</code> ，并按照上述方法继续进行。</li>
+<li><code>LAndExp</code> ：代表逻辑与表达式，由逻辑与表达式 <code>LAndExp</code> 、逻辑与符号 <code>&amp;&amp;</code> 、相等性表达式 <code>EqExp</code> 组成。由于该文法是左递归文法，因此，按照 <code>LOrExp</code> 中相似的方法进行解析。</li>
+<li><code>EqExp</code> ：代表相等性表达式，由相等性表达式 <code>EqExp</code> 、相等性符号 <code>==</code> 或 <code>!=</code> 、关系表达式 <code>RelExp</code> 组成。由于该文法是左递归文法，因此，按照 <code>LOrExp</code> 中相似的方法进行解析。</li>
+<li><code>RelExp</code> ：代表关系表达式，由关系表达式 <code>RelExp</code> 、关系符号 <code>&gt;</code> 或 <code>&lt;</code> 或<code>&gt;=</code> 或 <code>&lt;=</code> 、加减表达式 <code>AddExp</code> 组成。由于该文法是左递归文法，因此，按照 <code>LOrExp</code> 中相似的方法进行解析。</li>
+<li><code>ConstExp</code> ：代表常量表达式，只能是加减表达式。因此，直接按照加减表达式 <code>AddExp</code> 对其解析即可。同时应指出，由文法规定，常量表达式中出现的全部标识符必须是常量。</li>
+<li><code>Exp</code> ：代表普通表达式，只能是加减表达式。因此，直接按照加减表达式 <code>AddExp</code> 对其解析即可。</li>
+<li><code>AddExp</code> ：代表关系表达式，由加减表达式 <code>AddExp</code> 、加减符号 <code>+</code> 或 <code>-</code> 、乘除表达式 <code>MulExp</code> 组成。由于该文法是左递归文法，因此，按照 <code>LOrExp</code> 中相似的方法进行解析。</li>
+<li><code>MulExp</code> ：代表乘除表达式，由乘除表达式 <code>MulExp</code> 、乘除符号 <code>*</code> 或 <code>/</code> 或 <code>%</code> 、一元表达式 <code>UnaryExp</code> 组成。由于该文法是左递归文法，因此，按照 <code>LOrExp</code> 中相似的方法进行解析。</li>
+<li><code>UnaryExp</code> ：代表一元表达式，可能是带一元符号的一元表达式，基本表达式或函数调用。对于带一元符号的一元表达式，通过医院符号进行判定，若是则解析一元表达式 <code>UnaryExp</code> 即可。对于函数调用，通过标识符后的小括号 <code>(</code> 判定，若是函数调用，则对括号内进行函数实参 <code>FuncRParams</code> 解析。排除函数调用的情况后，一定是基本表达式，对基本表达式 <code>PrimaryExp</code> 进行解析即可。</li>
+<li><code>FuncRParams</code> ：代表函数实参。其由若干普通表达式组成，因此使用 <code>for</code>  循环进行解析，直至无法解析出  <code>Exp</code> 为止。</li>
+<li><code>PrimaryExp</code> ：代表基本表达式。可能是 <code>int</code> 型常量、 <code>char</code> 型常量、带小括号的普通表达式或左值表达式 <code>LVal</code> 。对于 <code>int</code> 型常量、 <code>char</code> 型常量，按照数据类型直接解析存储即可。对于带小括号的普通表达式，通过小括号 <code>(</code> 判定，若是则对后续普通表达式解析即可。对于左值表达式 <code>LVal</code> ，直接解析即可。</li>
+<li><code>LVal</code> ：代表左值表达式，主要是标识符（普通变量常量标识符，变量常量数组标识符，带偏移的变量常量数组标识符）。对于不带偏移的标识符（即不存在 <code>[Exp]</code> ），直接当作标识符 <code>Ident</code> 处理即可。对于带偏移的变量常量数组标识符，在存储标识符的同时也需要对偏移量表达式解析存储。</li>
+</ul>
+<p>对于每一种实现 <code>Syntax</code> 的语法节点，其应有属性 <code>syntaxes</code> ，表示其含有的全部子节点。获得语法树 <code>AST</code> 各节点后，将其存入父节点的 <code>syntaxes</code> 中，并设置函数，使其可以正确输出必要信息。</p>
+<hr>
+<h2 id="语义分析设计"><a href="#语义分析设计" class="headerlink" title="语义分析设计"></a>语义分析设计</h2><p>语法分析部分分析出的语法树 <code>AST</code> 会存储在编译器中。语义分析部分的主要任务是解析出现的标识符（函数标识符，常量标识符，变量标识符），构建符号表，以便后续代码生成时方便查阅。</p>
+<p>对于各类符号，在不同域定义的标识使用范围不同：在外层定义的标识可以在内层使用，而在内层定义的标识不可以在外层使用。相同层不同域定义的标识不可以互相使用。因此，需要建立一种双向树结构，每个节点代表每个符号表项，相同层节点代表相同层的符号表项。建立符号表项类 <code>Table</code> ，其属性有符号表项序号 <code>id</code> ，符号表项的父符号表项 <code>father</code> ，符号表项所处的层数 <code>floor</code> ，符号表项内存储的符号 <code>symbols</code> 。这样在查找符号时，从当前表项出发，从底向上逐层遍历，直至获得当前符号：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Symbol <span class="title function_">searchDefinition</span><span class="params">(String symbolName)</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (Symbol symbol : symbols) &#123;</span><br><span class="line">        <span class="keyword">if</span> (symbol.getName().equals(symbolName)) <span class="keyword">return</span> symbol;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (father != <span class="literal">null</span>) <span class="keyword">return</span> father.searchDefinition(symbolName);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要储存的符号有函数，变量，常量，变量数组以及常量数组。每种符号都有其类型和要储存的属性，应该建立类，规定相应属性：</p>
+<ul>
+<li><code>Symbol</code> ：总的符号类，其他符号类的父类，存储有各类符号的基本信息。包括符号序号 <code>id</code> ，符号所在的符号表项 <code>table</code> ，符号名 <code>name</code> ， 符号对应的单词 <code>token</code> ，符号类型 <code>type</code> （可能为 <code>&quot;intVar&quot;</code> 、 <code>&quot;charVar&quot;</code> 、 <code>&quot;intArray&quot;</code> 、 <code>&quot;charArray&quot;</code> 、 <code>&quot;intFunc&quot;</code> 、 <code>&quot;charFunc&quot;</code> 、 <code>&quot;voidFunc&quot;</code> ）。对于每个属性，建立 <code>set</code> 和 <code>get</code> 方法，并设置函数，使其可以正确输出必要信息。</li>
+<li><code>VarSymbol</code> ：变量常量符号类，继承 <code>Symbol</code> 。除去 <code>Symbol</code> 中存储的信息，还应额外存储符号数据类型 <code>bType</code> ，符号是否代表常量 <code>con</code> 。在创建该类时，应给出全部必要信息。</li>
+<li><code>ArraySymbol</code> ：变量常量数组符号类，继承 <code>Symbol</code> 。除去 <code>Symbol</code> 中存储的信息，还应额外存储符号数据类型 <code>bType</code> ，符号是否代表常量 <code>con</code> ，数组维度 <code>dim</code> （应指出 <code>SysY</code> 语言规定数组为一维）。在创建该类时，应给出全部必要信息。</li>
+<li><code>FuncSymbol</code> ：函数符号类，继承 <code>Symbol</code> 。除去 <code>Symbol</code> 中存储的信息，还应额外存储函数数据类型 <code>funcType</code> ，函数的形参个数 <code>paramNum</code> ，函数各形参的类型 <code>paramTypes</code> （可能为 <code>&quot;intVar&quot;</code> 、 <code>&quot;charVar&quot;</code> 、 <code>&quot;intArray&quot;</code> 、 <code>&quot;charArray&quot;</code> ）。在创建该类时，应给出全部必要信息。</li>
+</ul>
+<p>完成必需类准备后，可以进行符号的解析与符号表的构建。在语义分析器（符号管理器） <code>Manager</code> 中，读入并遍历语法树 <code>AST</code> ，解析各语法成分，获得新出现的符号，存入相应的符号表项。在遍历过程中，由于函数、块等的存在，符号会出现不同的定义与使用域，因此在遍历过程中，需要注意和维护当前符号所在层数，在层数改变时改变当前符号表（层数增加时新建符号表项，层数减少时转移至当前表项的父符号表项，如不存在则报错）。由于层数改变出现较为频繁，因此封装函数 <code>createTable()</code> 和 <code>quitTable()</code> 。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">createTable</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">Table</span> <span class="variable">father</span> <span class="operator">=</span> nowTable;</span><br><span class="line">    curFloor++;</span><br><span class="line">    curSerial = tables.size(); <span class="comment">// 当前符号表序号</span></span><br><span class="line">    curIndex = <span class="number">0</span>; <span class="comment">// 当前符号表中当前符号序号</span></span><br><span class="line">    nowTable = <span class="keyword">new</span> <span class="title class_">Table</span>(curSerial, father.getId(), father, curFloor);</span><br><span class="line">    tables.add(nowTable);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">quitTable</span><span class="params">()</span> &#123;</span><br><span class="line">    curFloor--;</span><br><span class="line">    curSerial = nowTable.getFather().getId();</span><br><span class="line">    curIndex = nowTable.getFather().getSize();</span><br><span class="line">    nowTable = nowTable.getFather();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会发生符号表变更的位置是（主）函数定义，带块的 <code>if</code> 和 <code>for</code> ，普通的块。应指出，虽然这几个位置产生表的变化都是因为块，但不可将符号表项的变更放在块的解析中。这是因为函数定义中可能出现形参，需要存入新符号表项中，因此应该具体问题具体分析。对于不带块的 <code>if</code> 和 <code>for</code> ，根据文法，其后只能是 <code>[Exp] &#39;;&#39;</code> ，不能出现新的声明 <code>Decl</code> ，因此不新建符号表。这些符号表项变化主要出现在 <code>MainFuncDef</code> 、 <code>FuncDef</code> 和 <code>Stmt</code> 中。</p>
+<ul>
+<li><code>MainFuncDef</code> ：主函数内的符号表变化，不含形参。主要是在主函数的块内，因此在进入块前调用 <code>createTable()</code> ，完成块的解析并退出块后调用 <code>quitTable()</code> 。</li>
+<li><code>FuncDef</code> ：普通函数内的符号表变化，不含形参。主要是在普通函数的形参声明以及块内，因此在函数进行形参声明前调用 <code>createTable()</code> ，完成块的解析并退出块后调用 <code>quitTable()</code> 。</li>
+<li><code>Stmt</code> ：主要是带块的 <code>if</code> 、 <code>for</code> 和 普通的块。在这里，可以进行合并，统一在 <code>Stmt → Block</code> 的过程中进行。在进入块前调用 <code>createTable()</code> ，完成块的解析并退出块后调用 <code>quitTable()</code> 。</li>
+</ul>
+<p>对于三种符号 <code>FuncSymbol</code> 、 <code>VarSymbol</code> 、 <code>ArraySymbol</code> ，第一种主要在函数定义中出现（ <code>main</code> 函数可以直接获得符号，无需特殊说明），后两种主要在变量常量定义，函数形参解析中出现。</p>
+<ul>
+<li><code>FuncDef</code> ：根据解析的语法成分，获得函数标识符并建立 <code>FuncSymbol</code> 存储在当前符号表项中。</li>
+<li><code>ConstDef</code> / <code>VarDef</code> ：根据解析的语法成分（标识符和数据类型），建立  <code>VarSymbol</code> 或 <code>ArraySymbol</code> 存储在当前符号表项中。</li>
+<li><code>FuncFParam</code> ：建立符号的方法基本与 <code>ConstDef</code> / <code>VarDef</code> 相同，建立  <code>VarSymbol</code> 或 <code>ArraySymbol</code> 存储在当前符号表项中。</li>
+</ul>
+<hr>
+<h2 id="错误处理设计"><a href="#错误处理设计" class="headerlink" title="错误处理设计"></a>错误处理设计</h2><p>按照文法设计与实验安排，本次实验中总共有 $13$ 种错误，其中 <code>a</code> 类错误会出现在词法分析部分，<code>i</code> 、 <code>j</code> 、 <code>k</code> 类错误会出现在语法分析部分，其余错误会出现在语义分析部分。同时，为了统一性和复用性，在实验中建立了错误判定器类 <code>Judgement</code> ，判断每类错误时输入必要信息，获得判断结果。同时 <code>Judgement</code> 内含属性 <code>errors</code> ，存储分析过程中抛出的全部错误。现对每种错误进行分析：</p>
+<ul>
+<li><code>a</code> 类错误：非法符号 <code>&amp;</code> 和 <code>|</code> ，应该将其当做 <code>&amp;&amp;</code> 与 <code>||</code> 进行处理，并在记录单词名称的时候正确记录。这个错误主要在词法分析对 <code>&amp;|</code> 的分析中出现，判断当前字符与下一个字符是否相同即可。由于出现在词法分析部分，为了错误检测的正常运行（以检测出全部错误），按照出现的第一个字符添加或更改字符，将其作为正确单词存入。判断函数输入的必要信息是当前字符、下一个字符以及当前字符所在行数。</li>
+<li><code>b</code> 类错误：符号名在当前域下重复定义。应指出，变量在同一级域下重定义会判定错误，不同级作用域下，内层会覆盖外层定义。这个错误主要出现在语义分析符号定义阶段。将当前符号放入当前符号表项搜索，判断是否出现相同名字的符号。判断函数输入的必要信息是当前符号以及当前符号表项。</li>
+<li><code>c</code> 类错误：使用未定义的标识符。使用当前符号表项或其父符号表项中不含有的的符号，主要出现在语义分析的语句和表达式的解析中。将当前符号在当前符号表以及父符号表等递归搜索，判断是否出现相同名字的符号。判断函数输入的必要信息是当前标识符单词以及当前符号表项。</li>
+<li><code>d</code> 类错误：函数的形参和实参个数不匹配。主要出现在语义分析的函数调用阶段。在函数定义阶段，有对函数的形参进行存储。在调用阶段（ <code>UnaryExp</code> 的解析阶段），以 <code>,</code> 作为分隔符解析函数实参，存储实参的个数。比较形参数组的大小和实参个数即可。判断函数输入的必要信息是当前函数的符号以及实参个数。</li>
+<li><code>e</code> 类错误：函数的形参和实参类型不匹配。主要出现在语义分析的函数调用阶段。在函数定义阶段，有对函数的形参进行存储。在调用阶段（ <code>UnaryExp</code> 的解析阶段），以 <code>,</code> 作为分隔符解析函数实参，存储各实参的类型。比较各形参和各实参的类型是否匹配即可。应注意，类型匹配过程中，普通变量常量允许出现数据转换，即 <code>intVar</code> 和 <code>charVar</code> 可以认为是匹配的。其余类型必须完全匹配才可。判断函数输入的必要信息是当前函数的符号以及实参类型数组。</li>
+<li><code>f</code> 类错误： <code>void</code> 类型的函数存在不匹配的 <code>return</code> 语句。 <code>void</code> 类型函数如果存在返回语句，返回语句后一定不能出现 <code>Exp</code> 。主要出现在语义分析的语句分析阶段。在语句分析的过程中，如果出现 <code>return</code> ，应解析其后单词，判断是否出现 <code>Exp</code> 。判断函数输入的必要信息是当前函数符号，当前 <code>return</code> 所在行数以及当前 <code>return</code> 是否存在返回值。</li>
+<li><code>g</code> 类错误： <code>int</code> 或 <code>char</code> 类型的函数在函数末尾不存在 <code>return</code> 语句。为简化问题，实验规定， <code>int</code> 或 <code>char</code> 类型的函数在函数末尾必须存在 <code>return</code> 语句，即使在 <code>if-else</code> 控制流语句中出现也不能省略。主要出现在语义分析的函数定义阶段。在控制流外，如果出现 <code>return</code> 语句，则存储该语句所在域层数 <code>returnFloor</code> （这表明该变量一定保留的是最后一个 <code>return</code> 语句所在的层数，该变量初始化为 $-1$ ）；如果 <code>returnFloor</code> 的值不等于 <code>funcFloor + 1</code> （为 $-1$ 时证明不存在 <code>return</code> 语句，大于 <code>funcFloor + 1</code> 时证明该 <code>return</code> 语句在控制流内），则证明其存在该类错误。判断函数输入的必要信息是函数符号，最后一个 <code>return</code> 语句所在的层数以及函数块 <code>&#125;</code> 的行号。</li>
+<li><code>h</code> 类错误：尝试修改常量的值。主要出现在语义分析的语句和表达式的解析中。在构建语法树时，对于标识符，有属性 <code>con</code> 判断其是否是常量。因此，在赋值时根据该属性判断是否存在错误即可。判断函数输入的必要信息是常量符号以及是否是对该常量赋值。</li>
+<li><code>i</code> 类错误：缺少必要的 <code>;</code> 。这个错误主要出现在语法分析部分，在构建语法树的过程中按照正确文法检测相应位置是否存在 <code>;</code> 即可。由于出现在语法分析部分，为了错误检测的正常运行（以检测出全部错误），添加缺少的 <code>;</code> ，以保证当前语法成分的正确性。判断函数输入的必要信息是当前字符、上一个字符所在行数。</li>
+<li><code>j</code> 类错误：缺少必要的 <code>)</code> 。这个错误主要出现在语法分析部分，在构建语法树的过程中按照正确文法检测相应位置是否存在 <code>)</code> 即可。由于出现在语法分析部分，为了错误检测的正常运行（以检测出全部错误），添加缺少的 <code>)</code> ，以保证当前语法成分的正确性。判断函数输入的必要信息是当前字符、上一个字符所在行数。</li>
+<li><code>k</code> 类错误：缺少必要的 <code>]</code> 。这个错误主要出现在语法分析部分，在构建语法树的过程中按照正确文法检测相应位置是否存在 <code>]</code> 即可。由于出现在语法分析部分，为了错误检测的正常运行（以检测出全部错误），添加缺少的 <code>]</code> ，以保证当前语法成分的正确性。判断函数输入的必要信息是当前字符、上一个字符所在行数。</li>
+<li><code>l</code> 类错误： <code>printf</code> 字符串中格式字符数量与表达式个数不匹配。文法规定  <code>printf</code> 函数中可以出现格式字符 <code>%d</code> / <code>%c</code> ，用于输出 <code>int</code> 或 <code>char</code> 类型的算式。该类错误即是格式字符 <code>%d</code> / <code>%c</code> 与要输出的表达式的数量不同。 主要出现在语义分析的语句 <code>printf</code> 的解析中。在 <code>printf</code> 语句解析时，使用正则表达式，获得输出字符串中格式字符的匹配数量，并与解析的表达式个数进行比较。判断函数输入的必要信息是输出字符串以及表达式数量。</li>
+<li><code>m</code> 类错误：在非循环块中使用 <code>break</code> 和 <code>continue</code> 语句。主要出现在语义分析的语句 <code>break</code> 和 <code>continue</code> 的解析中。要判断当前语句是否位于循环块中，需要动态维护循环层数 <code>forFloor</code> 。该属性初值为 $0$ ，仅在进入循环时增加，在退出循环时减少。解析 <code>break</code> / <code>continue</code> 语句时，只需要判断循环层数 <code>forFloor</code> 是否大于 $0$ 即可。 判断函数输入的必要信息是<code>break</code> / <code>continue</code> 语句的行号以及循环层数 <code>forFloor</code> 。</li>
+</ul>
+<p>错误处理主要出现在词法分析、语法分析和语义分析部分。为了尽可能全面地检查出全部错误，按照流程，应保证词法分析和语法分析部分遇到错误不仅需要抛出相应错误，还需要进行修正，以便后续流程进行。错误处理完成后，获取 <code>errors</code> 属性，并输出相应信息。同时 <code>errors</code> 也将作为判断是否能进行代码生成的充分条件。</p>
+<hr>
+<h2 id="代码生成设计"><a href="#代码生成设计" class="headerlink" title="代码生成设计"></a>代码生成设计</h2><p>在获得语法树 <code>AST</code> 后，可以按照树型结构将其转换为目标代码树。直接转化为目标代码难度较大，因此优先转化为中间代码树，在转换为目标代码树。本次实验中选择的目标代码是MIPS，中间代码是LLVMIR。</p>
+<h3 id="中间代码生成设计"><a href="#中间代码生成设计" class="headerlink" title="中间代码生成设计"></a>中间代码生成设计</h3><p>在中间代码生成器 <code>Visitor</code> 中，读入语法分析中生成的抽象语法树 <code>AST</code> 和语义分析中生成的符号表 <code>tables</code> ，目标是生成中间代码树 <code>MCT</code> 。对于特定的语法成分，可以对应生成相应的中间代码节点 <code>IR</code> 。LLVMIR中的成分与结构如下图所示：</p>
+<p><img src="/img/loading.gif" data-original="/images/Compiler/编译器设计文档/中间代码树结构.png" alt="中间代码树结构" style="zoom:50%;" /></p>
+<p>LLVMIR中的成分主要有模块 <code>Module</code> ，对应语法成分中的 <code>CompUnit</code> ；全局值 <code>GlobalValue</code> ，对应语法成分中直接声明的全局变量常量；函数 <code>Function</code> ，对应语法成分中的 <code>FuncDef</code> ；基本块 <code>BasicBlock</code> ，存有需要先后执行的指令（一个基本块中的指令一定是一同执行的）；指令 <code>Instrunction</code> ，LLVMIR的基本指令，也是转化为MIPS指令的中间形式。一些常用的LLVMIR基本指令如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>LLVM IR</th>
+<th>使用方法</th>
+<th>简介</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add</code></td>
+<td><code>&lt;result&gt; = add &lt;ty&gt; &lt;op1&gt;, &lt;op2&gt;</code></td>
+<td>/</td>
+</tr>
+<tr>
+<td><code>sub</code></td>
+<td><code>&lt;result&gt; = sub &lt;ty&gt; &lt;op1&gt;, &lt;op2&gt;</code></td>
+<td>/</td>
+</tr>
+<tr>
+<td><code>mul</code></td>
+<td><code>&lt;result&gt; = mul &lt;ty&gt; &lt;op1&gt;, &lt;op2&gt;</code></td>
+<td>/</td>
+</tr>
+<tr>
+<td><code>sdiv</code></td>
+<td><code>&lt;result&gt; = sdiv &lt;ty&gt; &lt;op1&gt;, &lt;op2&gt;</code></td>
+<td>有符号除法</td>
+</tr>
+<tr>
+<td><code>srem</code></td>
+<td><code>&lt;result&gt; = srem &lt;type&gt; &lt;op1&gt;, &lt;op2&gt;</code></td>
+<td>有符号取余</td>
+</tr>
+<tr>
+<td><code>icmp</code></td>
+<td><code>&lt;result&gt; = icmp &lt;cond&gt; &lt;ty&gt; &lt;op1&gt;, &lt;op2&gt;</code></td>
+<td>比较指令</td>
+</tr>
+<tr>
+<td><code>and</code></td>
+<td><code>&lt;result&gt; = and &lt;ty&gt; &lt;op1&gt;, &lt;op2&gt;</code></td>
+<td>按位与</td>
+</tr>
+<tr>
+<td><code>or</code></td>
+<td><code>&lt;result&gt; = or &lt;ty&gt; &lt;op1&gt;, &lt;op2&gt;</code></td>
+<td>按位或</td>
+</tr>
+<tr>
+<td><code>call</code></td>
+<td><code>&lt;result&gt; = call [ret attrs] &lt;ty&gt; &lt;name&gt;(&lt;...args&gt;)</code></td>
+<td>函数调用</td>
+</tr>
+<tr>
+<td><code>alloca</code></td>
+<td><code>&lt;result&gt; = alloca &lt;type&gt;</code></td>
+<td>分配内存</td>
+</tr>
+<tr>
+<td><code>load</code></td>
+<td><code>&lt;result&gt; = load &lt;ty&gt;, ptr &lt;pointer&gt;</code></td>
+<td>读取内存</td>
+</tr>
+<tr>
+<td><code>store</code></td>
+<td><code>store &lt;ty&gt; &lt;value&gt;, ptr &lt;pointer&gt;</code></td>
+<td>写内存</td>
+</tr>
+<tr>
+<td><code>getelementptr</code></td>
+<td><code>&lt;result&gt; = getelementptr &lt;ty&gt;, ptr &lt;ptrval&gt; &#123;, &lt;ty&gt; &lt;idx&gt;&#125;*</code></td>
+<td>计算目标元素的位置（数组部分会单独详细说明）</td>
+</tr>
+<tr>
+<td><code>phi</code></td>
+<td><code>&lt;result&gt; = phi [fast-math-flags] &lt;ty&gt; [&lt;val0&gt;, &lt;label0&gt;], ...</code></td>
+<td>/</td>
+</tr>
+<tr>
+<td><code>zext..to</code></td>
+<td><code>&lt;result&gt; = zext &lt;ty&gt; &lt;value&gt; to &lt;ty2&gt;</code></td>
+<td>将 <code>ty</code> 的 <code>value</code> 的 type 扩充为 <code>ty2</code>（zero extend）</td>
+</tr>
+<tr>
+<td><code>trunc..to</code></td>
+<td><code>&lt;result&gt; = trunc &lt;ty&gt; &lt;value&gt; to &lt;ty2&gt;</code></td>
+<td>将 <code>ty</code> 的 <code>value</code> 的 type 缩减为 <code>ty2</code>（truncate）</td>
+</tr>
+<tr>
+<td><code>br</code></td>
+<td><code>br i1 &lt;cond&gt;, label &lt;iftrue&gt;, label &lt;iffalse&gt;</code> <br /><code>br label &lt;dest&gt;</code></td>
+<td>改变控制流</td>
+</tr>
+<tr>
+<td><code>ret</code></td>
+<td><code>ret &lt;type&gt; &lt;value&gt;</code>, <code>ret void</code></td>
+<td>退出当前函数，并返回值</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>想要对中间代码成分进行分析，首先应为各成分建立类型类 <code>ValurTypeIR</code> 。根据代码生成中出现的变量类型，可将其分为两类，基本类型和复合类型。</p>
+<ul>
+<li>基本变量类型：<ul>
+<li><code>IntegerTypeIR</code> ：位数据类型，含有属性位数 <code>bits</code> ，代表数据所占的位数。 <code>bits = 32</code> ，代表 <code>int</code> 类型； <code>bits = 8</code> ，代表 <code>char</code> 类型； <code>bits = 1</code> ，代表 <code>bool</code> 类型。</li>
+<li><code>VoidTypeIR</code> ：<code>void</code> 数据类型，仅 <code>FunctionIR</code> 中会出现。</li>
+<li><code>LabelTypeIR</code> ：标签类型，代表当前变量的类型为标签。</li>
+</ul>
+</li>
+<li>复合变量类型：<ul>
+<li><code>ArrayTypeIR</code> ：数组类型，含有属性数组元素类型 <code>typeIR</code> 、数组元素个数 <code>elementNum</code> 。其中，本实验中规定数组元素类型 <code>typeIR</code> 仅能为位数据类型 <code>IntegerTypeIR</code> ，即只存在 <code>int</code> / <code>char</code> 类型的数组。</li>
+<li><code>PointerTypeIR</code> ：指针类型，含有属性指针对象类型 <code>typeIR</code> 。其中，本实验中规定指针所指对象类型为数组类型 <code>ArrayTypeIR</code> （当含有为数组申请地址的指令时）和位数据类型 <code>IntegerTypeIR</code> （当含有普通地址指令时）。</li>
+<li><code>FunctionTypeIR</code> ：函数类型，含有属性函数数据类型 <code>typeIR</code> 、函数形参数据类型 <code>paramTypes</code> 。</li>
+</ul>
+</li>
+</ul>
+<p>在建立成分类型类后，为各中间代码成分构建类，并对语法树 <code>AST</code> 遍历解析获得中间代码成分。所有的中间代码节点（除顶层模块），均继承于中间代码值类 <code>ValueIR</code> 。该类主要代表各种中间代码索要使用的值，最常用的子类是 <code>FunctionIR</code> （用于函数调用等指令中）、 <code>BasicBlockIR</code> （用于跳转等指令中）等。构建的中间代码成分类如下：</p>
+<ul>
+<li><p><code>ModuleIR</code> ：中间代码中的模块，代表整个程序。由于本次实验中涉及的待编译 <code>SysY</code> 语言文件都是单文件，因此 <code>ModuleIR</code> 唯一。其含有属性全局变量声明 <code>globalVariables</code> 、函数声明 <code>functions</code> 。在 <code>CompUnit</code> 解析中获得<code>ModuleIR</code> 。</p>
+</li>
+<li><p><code>GlobalVariableIR</code> ：中间代码中的全局变量声明。其含有属性变量名 <code>name</code> 、初始值 <code>initValue</code> 、是否是输出字符串 <code>isPrint</code> 。在 <code>Decl</code> 中，根据当前变量常量所在层数判断其是否是全局变量常量。</p>
+</li>
+<li><p><code>FunctionIR</code> ：中间代码中的函数（包括主函数）。其含有属性函数名 <code>name</code> 、函数参数 <code>params</code> 、函数含有的基本块 <code>blocks</code> 、函数中变量数量 <code>numVar</code> 。在 <code>FuncDef</code> 解析中获得 <code>FunctionIR</code> 。LLVMIR中变量以序号表示，每个函数中的变量编号均从 $1$ 开始，因此可以内置函数 <code>allocVar</code> ，为函数申请新变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> VariableIR <span class="title function_">allocVar</span><span class="params">(ValueTypeIR typeIR)</span> &#123;</span><br><span class="line">    <span class="type">VariableIR</span> <span class="variable">var</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">VariableIR</span>(typeIR, numVar, name);</span><br><span class="line">    numVar++;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">var</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>BasicBlockIR</code> ：中间代码中的基本块，存储需要一同执行的LLVMIR指令。其含有属性基本块标签 <code>label</code> 、基本块是否可以添加指令 <code>canAddInstr</code> 、基本块含有的指令 <code>instrs</code> 。在 <code>Block</code> 的解析中获得 <code>BasicBlockIR</code> （由于申请到的块在 <code>Block</code> 外可能需要使用，因此将新 <code>BasicBlockIR</code> 的申请放在 <code>FuncDef</code> 或 <code>Stmt</code> 的解析中）。在 <code>if</code> 或 <code>for</code> 这种含有条件 <code>Cond</code> 解析的语句中，需要注意额外新 <code>BasicBlockIR</code> 的申请。 </p>
+<blockquote>
+<p>对于普通的 <code>Cond</code> 判断，其结构应该是 <code>condBlock-trueBlock-falseBlock</code> 。条件判断块 <code>condBlock</code> 中含有跳转指令 <code>br cond, trueLabel, falseLabel</code> 。在条件 <code>Cond</code> 的解析中，需要满足短路求值原则。即对于逻辑与表达式和逻辑或表达式，当左侧表达式可以确定整体表达式值时，不访问右侧表达式。这意味着，当前访问表达式之前的表达式计算结果为真。对于不同形式的表达式，由于短路求值原则，跳转的标签也有所不同。</p>
+<ul>
+<li>对于逻辑或表达式 <code>B1 || B2</code> ， <code>B1</code> 对应的基本块 <code>block1</code> 的跳转指令，为真跳转到 <code>trueLabel</code> ，为假跳转到 <code>B2Label</code> ； <code>B2</code> 对应的基本块 <code>block2</code> 的跳转指令，为真跳转到 <code>trueLabel</code> ，为假跳转到 <code>falseLabel</code> 。 </li>
+<li>对于逻辑与表达式 <code>B1 &amp;&amp; B2</code> ， <code>B1</code> 对应的基本块 <code>block1</code> 的跳转指令，为真跳转到 <code>B2Label</code> ，为假跳转到 <code>falseLabel</code> ； <code>B2</code> 对应的基本块 <code>block2</code> 的跳转指令，为真跳转到 <code>trueLabel</code> ，为假跳转到 <code>falseLabel</code> 。 </li>
+<li>对于逻辑与或组合表达式 <code>B1 &amp;&amp; B2 || B3</code> ， <code>B1</code> 对应的基本块 <code>block1</code> 的跳转指令，为真跳转到 <code>B2Label</code> ，为假跳转到 <code>B3Label</code> ； <code>B2</code> 对应的基本块 <code>block2</code> 的跳转指令，为真跳转到 <code>trueLabel</code> ，为假跳转到 <code>B3Label</code> ； <code>B3</code> 对应的基本块 <code>block3</code> 的跳转指令，为真跳转到 <code>trueLabel</code> ，为假跳转到 <code>falseLabel</code> 。 </li>
+<li>对于逻辑与或组合表达式 <code>B1 || B2 &amp;&amp; B3</code> ， <code>B1</code> 对应的基本块 <code>block1</code> 的跳转指令，为真跳转到 <code>trueLabel</code> ，为假跳转到 <code>B2Label</code> ； <code>B2</code> 对应的基本块 <code>block2</code> 的跳转指令，为真跳转到 <code>B3Label</code> ，为假跳转到 <code>falseLabel</code> ； <code>B3</code> 对应的基本块 <code>block3</code> 的跳转指令，为真跳转到 <code>trueLabel</code> ，为假跳转到 <code>falseLabel</code> 。 </li>
+</ul>
+<p>由于在 <code>Cond</code> 的解析函数中，无法获得具体的表达式的数量，因此只能在逻辑与或表达式的解析中创建新的基本块。在解析与或表达式时，出现与或符号，证明还存在下一个表达式，则在解析当前表达式之前应该建立新的基本块。解析逻辑或表达式新建的基本块（ <code>nextOrBlock</code> ，下一个逻辑或表达式块）应当一同传入逻辑与表达式的解析函数中。同时可以观察到，像 <code>B1 || B2 &amp;&amp; B3</code> 这种形式， <code>B2</code> 后不存在下一个逻辑或表达式块，为假时跳转到 <code>falseLabel</code> 。因此，在逻辑或表达式新建基本块时应判断当前是否是最后一个逻辑或表达式，以决定跳转指令的目标。</p>
+</blockquote>
+<p>同时，应注意，LLVMIR规定，一个基本块中只能出现一个改变控制流的指令（ <code>br</code> 或 <code>ret</code> ），因此在基本块出现该类指令后将 <code>canAddInstr</code> 置为 <code>false</code> ，后续产生的指令不能再添加到该基本块中。</p>
+</li>
+<li><p><code>ConstIR</code> ：中间代码中的常量。其含有属性常量数值 <code>value</code> 。</p>
+<ul>
+<li><code>ConstArrayIR</code> ：中间代码中的数组常量，继承 <code>ConstIR</code> 。其含有属性数组元素 <code>values</code> 。</li>
+<li><code>ConstStringIR</code> ：中间代码中的字符串常量，继承 <code>ConstIR</code> 。区别于普通的字符串常量（那将在字符数组的初始化中解决），这个字符串常量专指 <code>printf</code> 中的输出字符串。其含有属性字符串名 <code>name</code> 、字符串值 <code>value</code> 、字符串长度 <code>length</code> 。</li>
+</ul>
+</li>
+<li><p><code>VariableIR</code> ：中间代码中的变量。其含有属性变量名 <code>name</code> 、变量编号 <code>pos</code> 、变量值 <code>value</code> 、是否是全局变量 <code>isGlobal</code> 。对于普通变量和全局变量，其所使用的属性不同：全局变量使用变量名、变量值，局部变量使用变量编号、变量值。</p>
+</li>
+<li><p><code>InstrIR</code> ：中间代码中的指令。其含有属性操作符号 <code>op</code> 。</p>
+<ul>
+<li><code>AllocateIR</code> ：申请地址的指令，含有属性申请结果 <code>result</code> 、申请类型 <code>type</code> 。主要出现在变量常量声明中，为要声明的标识申请足够的存储地址。</li>
+<li><code>StoreIR</code> ：存储变量的指令，含有属性存储值 <code>value</code> 、存储地址 <code>address</code> 。主要出现在赋值语句中，将新值存储在变量对应的地址。</li>
+<li><code>LoadIR</code> ：加载变量的指令，含有属性加载到的值 <code>value</code> 、加载地址 <code>address</code> 。主要出现在对变量的使用语句中，将变量的值从对应地址中取出并参与运算。</li>
+<li><code>CallIR</code> ：调用函数的指令，含有属性调用函数 <code>function</code> 、函数返回值 <code>result</code> （函数是 <code>void</code> 型时为空）、函数实参 <code>params</code> 。主要出现在一元表达式的函数调用中，确定调用函数，将解析的表达式作为实参存入指令，获得返回值。</li>
+<li><code>GetElementIR</code> ：计算数组元素地址的指令，含有属性元素地址 <code>result</code> 、数组基地址 <code>address</code> 、元素索引 <code>index</code> 。主要出现在数组元素的访问中。</li>
+<li><code>BinaryIR</code> ：二元有符号计算指令，含有属性左值 <code>lValue</code> 、右值 <code>rValue</code> 、结果 <code>result</code> 。主要出现在加减乘除表达式的解析中，根据计算类型设置指令类型。</li>
+<li><code>BTypeTranIR</code> ：数据类型转换指令，含有属性转换值 <code>value</code> 、转换结果 <code>result</code> 。主要出现在各种数据类型转换的赋值中。</li>
+<li><code>IcmpIR</code> ：数据比较指令，含有属性左值 <code>lValue</code> 、右值 <code>rValue</code> 、结果 <code>result</code> 。主要出现在关系表达式和相等性表达式。</li>
+<li><code>BrIR</code> ：跳转指令，含有属性是否存在条件 <code>haveCond</code> 、跳转块 <code>block</code> 、跳转条件 <code>cond</code> 、为真时跳转块 <code>trueBlock</code> 、为假时跳转块 <code>falseBlock</code> 。有条件的跳转指令使用跳转条件、为真时跳转块、为假时跳转块；无条件的跳转指令使用跳转块。主要出现在各 <code>BasicBlock</code> 末尾改变控制流。</li>
+<li><code>RetIR</code> ：返回指令，含有属性返回结果 <code>result</code> （函数是 <code>void</code> 型时为空）。主要出现在 <code>return</code> 语句的解析中。</li>
+</ul>
+</li>
+</ul>
+<p>完成全部预备类构建后，即可遍历语法树 <code>AST</code> ，按照上文中所述的解析方式，构建对应的LLVMIR成分，组成中间代码树 <code>MCT</code> 。</p>
+<h3 id="目标代码生成设计"><a href="#目标代码生成设计" class="headerlink" title="目标代码生成设计"></a>目标代码生成设计</h3><p>在目标代码翻译器 <code>Translator</code> 中，读入生成的中间代码树 <code>MCT</code> ，目标是生成目标代码树 <code>OCT</code> 。目标代码的结构与中间代码相似，顶层模块 <code>ModuleMips</code> 、全局声明 <code>GlobalMips</code> 、函数 <code>FunctionIR</code> 、基本块 <code>BlockMips</code> 、指令 <code>InstrMips</code> 。因此，目标代码生成的主要思路是遍历中间代码树，生成对应的目标代码部分。</p>
+<p>对于模块 <code>ModuleIR</code> 、全局声明 <code>GlobalVariableIR</code> 、基本块 <code>BasicBlockIR</code> 的遍历解析，难度较小，基本为直译，因此不过多赘述。主要说明函数 <code>FunctionIR</code> 和指令 <code>InstrIR</code> 的翻译。此次实验中使用到的MIPS指令如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>MIPS</th>
+<th>使用方法</th>
+<th>简介</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>La</code></td>
+<td><code>La $1, &lt;label&gt;</code></td>
+<td>从标签加载数值</td>
+</tr>
+<tr>
+<td><code>Li</code></td>
+<td><code>Li $1, &lt;value&gt;</code></td>
+<td>从立即数加载数值</td>
+</tr>
+<tr>
+<td><code>move</code></td>
+<td><code>move $1, $2</code></td>
+<td>将寄存器值赋给另一寄存器</td>
+</tr>
+<tr>
+<td><code>mfhi</code></td>
+<td><code>mfhi $1</code></td>
+<td>读 <code>hi</code> 寄存器</td>
+</tr>
+<tr>
+<td><code>mflo</code></td>
+<td><code>mflo $1</code></td>
+<td>读 <code>lo</code> 寄存器</td>
+</tr>
+<tr>
+<td><code>addu</code></td>
+<td><code>addu $1, $2, $3</code></td>
+<td>无符号加</td>
+</tr>
+<tr>
+<td><code>addiu</code></td>
+<td><code>addiu $1, $2, &lt;value&gt;</code></td>
+<td>无符号加立即数</td>
+</tr>
+<tr>
+<td><code>subu</code></td>
+<td><code>subu $1, $2, $3</code></td>
+<td>无符号减</td>
+</tr>
+<tr>
+<td><code>mult</code></td>
+<td><code>mult $1, $2</code></td>
+<td>有符号乘</td>
+</tr>
+<tr>
+<td><code>div</code></td>
+<td><code>div $1, $2</code></td>
+<td>有符号除</td>
+</tr>
+<tr>
+<td><code>slt</code></td>
+<td><code>slt $1, $2, $3</code></td>
+<td>有符号小于置1</td>
+</tr>
+<tr>
+<td><code>andi</code></td>
+<td><code>andi $1, $2, $3</code></td>
+<td>与立即数</td>
+</tr>
+<tr>
+<td><code>sll</code></td>
+<td><code>sll $1, $2, &lt;offset&gt;</code></td>
+<td>逻辑左移</td>
+</tr>
+<tr>
+<td><code>srl</code></td>
+<td><code>srl $1, $2, &lt;offset&gt;</code></td>
+<td>逻辑右移</td>
+</tr>
+<tr>
+<td><code>sra</code></td>
+<td><code>sra $1, $2, &lt;offset&gt;</code></td>
+<td>算术右移</td>
+</tr>
+<tr>
+<td><code>lw</code></td>
+<td><code>lw $1, &lt;offset&gt;($2)</code></td>
+<td>加载字</td>
+</tr>
+<tr>
+<td><code>sw</code></td>
+<td><code>sw $1, &lt;offset&gt;($2)</code></td>
+<td>存储字</td>
+</tr>
+<tr>
+<td><code>beq</code></td>
+<td><code>beq $1, $2, &lt;label&gt;</code></td>
+<td>相等时转移</td>
+</tr>
+<tr>
+<td><code>bne</code></td>
+<td><code>bne $1, $2, &lt;label&gt;</code></td>
+<td>不等时转移</td>
+</tr>
+<tr>
+<td><code>bgez</code></td>
+<td><code>bgez $1, &lt;label&gt;</code></td>
+<td>大于等于0时转移</td>
+</tr>
+<tr>
+<td><code>blez</code></td>
+<td><code>blez $1, &lt;label&gt;</code></td>
+<td>小于等于0时转移</td>
+</tr>
+<tr>
+<td><code>bgtz</code></td>
+<td><code>bgtz $1, &lt;label&gt;</code></td>
+<td>大于0时转移</td>
+</tr>
+<tr>
+<td><code>bltz</code></td>
+<td><code>bltz $1, &lt;label&gt;</code></td>
+<td>小于0时转移</td>
+</tr>
+<tr>
+<td><code>j</code></td>
+<td><code>j &lt;label&gt;</code></td>
+<td>跳转</td>
+</tr>
+<tr>
+<td><code>jal</code></td>
+<td><code>jal &lt;label&gt;</code></td>
+<td>跳转并链接</td>
+</tr>
+<tr>
+<td><code>jr</code></td>
+<td><code>jr $1</code></td>
+<td>跳转至寄存器</td>
+</tr>
+<tr>
+<td><code>syscall</code></td>
+<td><code>syscall</code></td>
+<td>系统调用</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>对于MIPS指令的翻译，最重要的是寄存器的存储和分配系统的建立。建立寄存器类 <code>Register</code> ，其含有属性名称 <code>name</code> 、编号 <code>id</code> 、是否正在使用 <code>use</code> 、寄存器中值 <code>value</code> 。同时建立寄存器表类 <code>RegisterTable</code> ，负责寄存器的管理。对于寄存器的分配，采用的策略是如果有未在使用的寄存器，即分配该寄存器；如果全部寄存器都在使用，则将 <code>$t0</code> 的值压入数据栈中，分配 <code>$t0</code> 。对于该种分配方法，核心是寄存器应该在何时释放。寄存器的释放原则是每次存入寄存器的值只能使用一次，使用后立即释放（出于正确性考虑，再使用寄存器前，应检查该寄存器内数据是否是当前变量），以防止寄存器数量不够用以及控制流改变引发的寄存器冲突问题。寄存器的释放过程在指令中进行。</p>
+<p>由于每一个 <code>VariableIR</code> 可能被不止一次使用，因此应该建立中间代码变量符号表，以便后续使用。建立中间代码符号类 <code>SymbolMips</code> ，其含有属性变量名 <code>name</code> 、是否是全局声明 <code>isGlobal</code> 、是否是立即数 <code>isImm</code> 、是否是绝对地址 <code>isAbsolute</code> 、分配的寄存器 <code>register</code> 、数值 <code>value</code> 、存储的相对地址 <code>addrOffset</code> 。对于普通变量或立即数，填写相应属性即可。对于代表地址的变量，则需要要特殊处理。对于存储全局声明标签的变量，需要标记 <code>isAbsolute</code> 为真，后续使用时可能出现相对地址与绝对地址之间的转化。</p>
+<p>在完成预备类的构建后，进行 <code>InstrIR</code> 的翻译：</p>
+<ul>
+<li><code>AllocateIR</code> ：为变量申请地址，不增加MIPS指令，只改变当前的 <code>offset</code> 。为变量构建中间代码变量符号，并将当前相对 <script type="math/tex">sp</script> 的偏移量 <code>offset</code> 赋值给相应属性即可。按照申请的地址大小，增加 <code>offset</code> 的值（ <code>int</code> / <code>char</code> 型均按照一个字节存储，变量为数组时按照元素数量改变 <code>offset</code> 的值）。</li>
+<li><code>StoreIR</code> ：存储变量，使用 <code>sw $1, &lt;offset&gt;($2)</code> 即可。应注意判断存储到的指针变量类型：若该变量是相对地址，则使用 <code>sw $1, &lt;offset&gt;($sp)</code> ；若该变量是绝对地址，则使用 <code>sw $1, 0($2)</code> 。完成存储后，释放分配给值变量和地址变量的寄存器。</li>
+<li><code>LoadIR</code> ：加载变量，使用 <code>lw $1, &lt;offset&gt;($2)</code> 即可。对于待加载的指针变量类型的判定和 <code>StoreIR</code> 相同。完成加载后，释放分配给地址变量的寄存器。</li>
+<li><code>CallIR</code> ：调用函数，使用 <code>jal &lt;label&gt;</code> 跳转到函数位置即可。</li>
+<li><code>GetElementIR</code> ：计算数组元素地址， <code>elementAddr = baseAddr + index * 4</code> ， <code>elementAddr</code> 统一使用绝对地址。如果基地址为绝对地址，直接使用 <code>sll</code> 和 <code>addu</code> 指令计算即可。如果基地址为相对地址，则需要额外加 <code>$sp</code> 。完成计算后，释放分配给基地址变量和索引变量的寄存器。</li>
+<li><code>BinaryIR</code> ：二元有符号计算，使用对应的二元计算指令即可。应注意，为防止计算中的数值溢出，加减指令应使用 <code>addu</code> 和 <code>subu</code> 。对于乘除模，使用 <code>mult</code> 、 <code>div</code> 指令搭配 <code>mfhi</code> 、 <code>mflo</code> 指令即可。完成计算后，释放分配给算式左值右值的寄存器。</li>
+<li><code>BTypeTranIR</code> ：数据类型转换，由于 <code>int</code> / <code>char</code> 型均按照一个字节存储，理论上结果变量使用值变量的寄存器即可。但应注意，对于 <code>trunc</code> 指令，将 <code>int</code> 型缩减到 <code>char</code> 型，高24位数据应当舍弃。因此若为 <code>trunc</code> 指令，则添加 <code>andi $1, $2, 0xff</code> 。</li>
+<li><code>IcmpIR</code> ：二元有符号比较，按照比较类型添加指令即可。由于LLVMIR中是先比较得到结果再进行跳转，而MIPS中只有 <code>slt</code> 一种比较指令，其他类型比较只有直接的跳转指令。因此为了不破坏LLVMIR指令的原子性，需要使用组合的 <code>slt</code> 指令。将 <code>&lt;=</code> / <code>&gt;=</code> 转化为 <code>!&gt;</code> / <code>!&lt;</code> ， <code>==</code> / <code>!=</code> 转化为 <code>!&gt; &amp;&amp; !&lt;</code> / <code>&gt; || &lt;</code> ，使用 <code>slt</code> 搭配逻辑运算指令即可实现其他类型的比较。完后比较后，释放分配给比较式左值右值的寄存器。</li>
+<li><code>BrIR</code> ：各类跳转。对于 <code>br label</code> ，可直接翻译为 <code>j &lt;label&gt;</code> ；对于 <code>br cond, trueLabel, falseLabel</code> ，可翻译为 <code>beq cond, 0, &lt;falseLabel&gt;</code> 与 <code>j &lt;trueLabel&gt;</code> 的组合。对于后者，完成比较后，释放分配给条件的寄存器。</li>
+<li><code>RetIR</code> ：函数返回。对于存在返回值的 <code>RetIR</code> 指令，首先需要将返回值赋值给 <code>$v0</code> 及 <code>$v1</code> 。由于文法中规定，返回值至多为一个值，因此只使用 <code>$v0</code> 即足够。完成赋值后， <code>jr $ra</code> 返回调用前下一条指令即可。</li>
+</ul>
+<p>由于MIPS中只存在全局寄存器和数据栈，不存在函数形参和实参的概念，因此 <code>FunctionMips</code> 的处理与 <code>FunctionIR</code> 的处理有所不同。在调用函数时，首先应进行压栈，将目前全部寄存器中的数据压入栈中，并按照压栈的数据数量改变 <code>$sp</code> 的值，防止函数解析时改变寄存器值而造成的错误。将实参解析后存入 <code>$a0 - $a3</code> 寄存器中，如果实参数量超过 $4$ 个，则将多余的实参压栈。进入函数解析后，首先应将 <code>$sp</code> 和实参取出并存在栈中。由于可能存在参数数量超过 $4$ 个的情况， <code>$a0</code> 对应的参数应当存入 <code>offset = 4</code> 的地址，会造成形参的污染，因此形参的存储应从后向前进行。函数解析中如果出现调用其他函数的情况，重复上述操作即可。行进到 <code>ret</code> 语句时取出 <code>$sp</code> ，并加入 <code>jr $ra</code> 。完成函数解析并返回调用前下一条指令后，将调用前压入栈中的数据从栈中取出（在出栈前可以先释放全部临时寄存器，以防函数遗留数据导致寄存器后期无法使用），并按照压栈的数据数量改变 <code>$sp</code> 的值。</p>
+<hr>
+<h2 id="代码优化"><a href="#代码优化" class="headerlink" title="代码优化"></a>代码优化</h2><h3 id="中间代码优化"><a href="#中间代码优化" class="headerlink" title="中间代码优化"></a>中间代码优化</h3><p>中间代码优化主要有以SSA形式建立中间语言、死代码删除、GVN&amp;GCN建立、常量提取等。由于时间原因，本次实验中编译器未进行中间代码优化。</p>
+<h3 id="目标代码优化"><a href="#目标代码优化" class="headerlink" title="目标代码优化"></a>目标代码优化</h3><p>目标代码优化主要有指令选择、图着色寄存器分配、乘除法优化、基本块合并和窥孔优化。本次实验中，主要完成了指令选择、无用指令删除、乘除法优化。</p>
+<h4 id="指令选择"><a href="#指令选择" class="headerlink" title="指令选择"></a>指令选择</h4><p>为了实现更多功能，以及更加方便翻译高级语言，MIPS提供了大量的伪指令使用，例如<code>subi</code>、<code>move</code>、<code>ble</code> 等，能够缩短指令的条数，增加代码的可读性。但实际上，伪指令会被翻译为多条实际指令进行使用。以 <code>subi</code> 为例，一条 <code>subi $1, $2, 1000</code> 的指令，会被MIPS的模拟器Mars翻译为 <code>addi $3, $0, 0x3e8</code> 和 <code>sub $1, $2, $3</code> 两条指令；但是如果直接使用 <code>addi $1, $2, -1000</code> 的指令，不会被翻译为额外指令，可以提高程序执行效率。因此，将全部 <code>subi</code> 指令替换为 <code>addi</code> 指令。程序中涉及到 <code>subi</code> 指令的部分主要是调用函数时 <code>$sp</code> 的改变，将这部分指令替换即可。</p>
+<p>在目标代码翻译的过程中，出于保护LLVMIR指令原子性的考虑，将 <code>IcmpIR</code> 翻译为 <code>slt</code> 和逻辑运算指令搭配的形式，如 <code>%res = icmp eq i32 %1, %2</code> ，翻译为MIPS指令就是 <code>slt $t2, $t1, $t0</code> 、 <code>slt $t1, $t0, $t1</code> 、 <code>or $t2, $t2, $t1</code> 、 <code>xor $t2, $t2, 1</code> 四条指令，最终寄存器 <code>$t2</code> 存储的就是比较结果。由于比较式出现在 <code>Cond</code> 中，其后通常伴随着跳转指令，因此可以对其进行优化。比如说源代码 <code>if(i == 1) &#123;...&#125;</code> ，直接生成LLVMIR指令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">%main_var2 = load i32, i32* %main_var1</span><br><span class="line">%main_var3 = icmp eq i32 %main_var2, 1</span><br><span class="line">br i1 %main_var3, label %trueLabel, label %falseLabel</span><br><span class="line">trueLabel:</span><br><span class="line">...</span><br><span class="line">falseLabel:</span><br></pre></td></tr></table></figure>
+<p>优化前优化后的MIPS指令如下：</p>
+<figure class="highlight mips"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 优化前：</span></span><br><span class="line"><span class="keyword">lw </span>$<span class="built_in">t0</span>, <span class="number">4</span>($<span class="built_in">sp</span>)</span><br><span class="line"><span class="keyword">move </span>$<span class="built_in">t1</span>, $<span class="built_in">t0</span></span><br><span class="line">li $<span class="built_in">t0</span>, <span class="number">1</span></span><br><span class="line"><span class="keyword">slt </span>$<span class="built_in">t2</span>, $<span class="built_in">t1</span>, $<span class="built_in">t0</span></span><br><span class="line"><span class="keyword">slt </span>$<span class="built_in">t1</span>, $<span class="built_in">t0</span>, $<span class="built_in">t1</span></span><br><span class="line"><span class="keyword">or </span>$<span class="built_in">t2</span>, $<span class="built_in">t2</span>, $<span class="built_in">t1</span></span><br><span class="line"><span class="keyword">xor </span>$<span class="built_in">t2</span>, $<span class="built_in">t2</span>, <span class="number">1</span></span><br><span class="line"><span class="keyword">beq </span>$<span class="built_in">t2</span>, $<span class="built_in">zero</span>, falseLabel</span><br><span class="line"><span class="symbol">trueLabel:</span></span><br><span class="line">...</span><br><span class="line"><span class="symbol">falseLabel:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#优化后</span></span><br><span class="line"><span class="keyword">lw </span>$<span class="built_in">t0</span>, <span class="number">4</span>($<span class="built_in">sp</span>)</span><br><span class="line"><span class="keyword">move </span>$<span class="built_in">t1</span>, $<span class="built_in">t0</span></span><br><span class="line">li $<span class="built_in">t0</span>, <span class="number">1</span></span><br><span class="line"><span class="keyword">bne </span>$<span class="built_in">t1</span>, $<span class="built_in">t0</span>, falseLabel</span><br><span class="line"><span class="symbol">trueLabel:</span></span><br><span class="line">...</span><br><span class="line"><span class="symbol">falseLabel:</span></span><br></pre></td></tr></table></figure>
+<p>其他比较类型 <code>!= | &gt;= | &lt;=</code> 与上述优化相似。</p>
+<h4 id="无用指令删除"><a href="#无用指令删除" class="headerlink" title="无用指令删除"></a>无用指令删除</h4><p>在MIPS指令中，每个基本块不强制要求出现改变控制流的跳转指令，如果该块不存在跳转指令，则默认按照顺序执行。由于在目标代码翻译的过程中，对于带条件的 <code>br</code> 指令 <code>br cond, trueLabel, falseLabel</code> ，采取的翻译模式是 <code>beq cond, 0, &lt;falseLabel&gt;</code> 与 <code>j &lt;trueLabel&gt;</code> 的组合，而通常来讲 <code>j &lt;trueLabel&gt;</code> 跳转到的 <code>trueBlock</code> 即是下一个基本块。同时，在中间代码生成的过程中，可能会出现仅含有 <code>br</code> 指令的基本块。这类块在目标代码翻译中会被翻译为 <code>j &lt;label&gt;</code> ，且通常跳转到下一个基本块。在这些情况中，会出现多余的跳转指令。因此可以特判跳转指令，如果跳转到的 <code>&lt;label&gt;</code> 和下一个块的标签相同，则省略这条跳转指令。</p>
+<h4 id="乘除法优化"><a href="#乘除法优化" class="headerlink" title="乘除法优化"></a>乘除法优化</h4><p>在MIPS指令中，乘除法计算指令 <code>mult</code> 和 <code>div</code> 消耗时间相比 <code>sll</code> 、<code>srl</code> 等移位指令， <code>addu</code> 、<code>subu</code> 等计算指令过大，需要进行一定优化。按照程序设置，在中间代码生成的过程中，当表达式左右两侧都为常量值时，会直接计算出结果。因此在目标代码翻译的过程中，只可能出现两个变量计算或一个变量一个常量值计算。乘除法优化基于一个变量一个常量值计算进行，主要原理是通过判定常量值是否是特定数值，优化乘除计算指令。在优化过程中，我们保证除数为正，当除数为负数时添加 <code>subu $1, $0, $1$</code> 即可。</p>
+<h5 id="乘法优化"><a href="#乘法优化" class="headerlink" title="乘法优化"></a>乘法优化</h5><ul>
+<li>数值为 $0$ ：可以直接对结果寄存器赋 $0$ 值。</li>
+<li>数值为 $2$ 的幂数：使用 <code>sll</code> 指令，计算该常量对于 $2$ 的幂次，左移相应位数。</li>
+<li>数值与小于它的最大 $2$ 的幂数差小于 $4$ ：按照实验设定， <code>mult</code> 的时间消耗是 <code>sll</code> 、 <code>addu</code> 的 $5$ 倍，因此部分乘数可以分解为 <code>sll + n * addu</code> 的形式，如数值为 <code>10 = 8 + 2</code> ，此时将 <code>x * 10</code> 就可以转变为 <code>x &lt;&lt; 3 + x + x</code> ，时间变短。数值与大于它的最小 $2$ 的幂数差小于 $4$ 的同理，分解为 <code>sll + n * subu</code> 的形式。</li>
+<li>其他数值：无法进行优化，正常添加指令即可。</li>
+</ul>
+<h5 id="除法优化"><a href="#除法优化" class="headerlink" title="除法优化"></a>除法优化</h5><ul>
+<li><p>数值为1：可以直接对结果寄存器赋原值。</p>
+</li>
+<li><p>数值为2的幂数：使用 <code>sra</code> 指令，计算该常量对于2的幂次，右移相应位数。移位计算的结果是除法结果向下取整，如 $2.3 \rightarrow 2$ 、 $-2.3 \rightarrow -3$ 。若被除数小于 $0$ ，除法结果应当是移位计算结果加1。因此，首先使用 <code>srl $2, $1, 31</code> 获得被除数的符号位，并与移位结果相加（若被除数为正，符号位为 $0$ ，除法结果等于移位计算结果；若被除数为负，符号位为 $1$ ，除法结果等于移位计算结果加 $1$ ）。</p>
+</li>
+<li><p>其他数值：按照实验设定， <code>div</code> 指令的时间消耗远大于 <code>mult</code> 的，因此可以借助乘法来优化除法。基本原理是先对原被除数乘一个大数，再右移获得最终结果。这个大数既要保证乘之后可以保证原除法结果，又要保证除法结果已经全部位于 <code>hi</code> 寄存器中。对于被除数 $n$ 、除数 $d$ 、大数 $m$ ，存在关系： $\lfloor\frac{n}{d}\rfloor = \lfloor\frac{n\cdot m}{2^{N+l}}\rfloor$ ，其中大数 $m$ 满足 $2^{N+l} \leqslant m \cdot d \leqslant 2^{N+l} + 2 ^ l$ ，常数 $N = 32$ 保证该大数满足要求。为简化大数 $m$ 的取值，设定 $l = 1$ 。可以得到代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">l</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">m</span> <span class="operator">=</span> (<span class="type">int</span>) (Math.pow(<span class="number">2</span>, <span class="number">32</span> + l) / valueAbs);</span><br><span class="line"><span class="keyword">if</span> (!(Math.pow(<span class="number">2</span>, <span class="number">32</span> + l) &lt;= ((<span class="type">long</span>) m) * valueAbs &amp;&amp; </span><br><span class="line">		((<span class="type">long</span>) m) * valueAbs &lt;= Math.pow(<span class="number">2</span>, <span class="number">32</span> + l) + Math.pow(<span class="number">2</span>, l))) &#123;</span><br><span class="line">	m++;</span><br><span class="line">&#125; <span class="comment">// 保证m满足条件</span></span><br><span class="line"><span class="type">SymbolMips</span> <span class="variable">rSym</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SymbolMips</span>(m);</span><br><span class="line">symUseReg(rSym);</span><br><span class="line">curBlock.addInstr(<span class="keyword">new</span> <span class="title class_">MultMips</span>(lSym.getRegister(), rSym.getRegister()));</span><br><span class="line">curBlock.addInstr(<span class="keyword">new</span> <span class="title class_">MfhiMips</span>(resSym.getRegister()));</span><br><span class="line">curBlock.addInstr(<span class="keyword">new</span> <span class="title class_">SraMips</span>(resSym.getRegister(), resSym.getRegister(), l));</span><br><span class="line">curBlock.addInstr(<span class="keyword">new</span> <span class="title class_">SrlMips</span>(lSym.getRegister(), lSym.getRegister(), <span class="number">31</span>));</span><br><span class="line">curBlock.addInstr(<span class="keyword">new</span> <span class="title class_">AdduMips</span>(resSym.getRegister(), resSym.getRegister(), lSym.getRegister()));</span><br><span class="line">rSym.getRegister().freeReg();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>对于乘法优化，左值右值为常量时均可进行；对于除法优化，被除数为常量时不能进行，除数为常量时可以进行。</p>
+<hr>
+<h2 id="实验感想"><a href="#实验感想" class="headerlink" title="实验感想"></a>实验感想</h2><p>本次实验确实是一次量大难度高的任务，极具挑战性。在实验中，需要按照流程建立一套编译程序，从读入程序字符串出发，直到翻译为机器码，并能够执行获得结果。实验的架构设计是较为明确的，课程组提供的流程十分科学，可以进行模块化开发，词法分析、语法分析、符号表建立、中间代码生成、目标代码翻译，每一个模块相互独立，建立接口实现两两之间的信息交互。本次实验更像是在学完各种课程后的一次实战演练，将之前在计算机组成、操作系统等课中学到的各类知识结合运用起来。实验涉及的知识点很多，字符串解析、层次分析法、有限状态机等。可以使用的设计理念也有很多，如单例模式、工厂模式、观察者模式等。本次实验也是继OO课设后第一次自行设计实现大型项目，十分强调程序的层次化模块化抽象化，不仅锻炼了我的编码能力，还锻炼了我的架构设计思维。在实现编译流程后，还进行了一定的代码优化工作。这些工作向我展示了编译程序的底层优化逻辑，从程序结构和底层机器码的角度出发，既有对于无用部分的删除，也有偏硬方面的优化。美中不足的是，由于各项课程事务繁多，无法再对设计的编译器做进一步优化。整体来说，实验难度很大，从高级语言、LLVMIR到MIPS，结构理念都有很大的不同，每一次转换都是一种挑战，每一个语言下的Bug都曾令我困扰良久。但看着完成的七八千行代码，以及可以成功编译执行的各个代码文件，内心十分有成就感。文档末尾，是对一学期课程的反思与告别。也想感谢理论课老师、两位帮助我颇多的助教和每一位一同进步的同学，使得我能够在这条艰难的路上一直走下去。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Mr-MysteryMan</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">http://example.com/2025/03/17/Compiler/编译器设计文档/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">hahaha</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a><a class="post-meta__tags" href="/tags/C/">C</a><a class="post-meta__tags" href="/tags/Mips/">Mips</a><a class="post-meta__tags" href="/tags/LLVMIR/">LLVMIR</a></div><div class="post-share"><div class="social-share" data-image="/img/wuhui/11.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8B%E6%80%BB%E7%BB%93/" title="面向对象课程总结"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/9.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">面向对象课程总结</div></div><div class="info-2"><div class="info-item-1">2024春-OO课程总结架构设计思维演进经过整个课程四个单元迭代式的学习演进，笔者在架构设计方面学到了很多，最重要的应该是分离式、模块化、层次化、安全性设计。现进行一定的记录： 第一单元 字符串解析的简单计算器实现 递归下降法设计：递归下降法是将原对象分为多个层次，每个层次相互独立处理，将本层次划分为多个下一层次的元素，并进入下一个层次进行处理。在第一单元中表现为原式分为多项式、单项式、因子，按照+/-将多项式拆分为单项式，按照*将单项式分为因子，在因子层面，如果因子带有()则按照多项式处理（这就会出现多项式类继承因子类的行为）。 分离式设计：分离式设计应该是面向对象设计思想中极为重要的一点。这种思想有多种含义，包括程序功能模块化设计（如本单元中字符串解析为各个元素与字符串中元素计算功能分离）、层次化设计（如本单元中分为多项式、单项式、因子，后面可能还有更多层次，各个层次相互分离）等。  第二单元...</div></div></div></a><a class="pagination-related" href="/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/" title="数据库知识点整理"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/6.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">数据库知识点整理</div></div><div class="info-2"><div class="info-item-1">数据库第一章 概述 文件系统：数据以文件形式保存在外存，存取以记录为单位，程序数据有一定独立性，文件与数据一一对应，数据共享性差冗余度大（存储消耗大，容易造成数据不一致性） 数据库系统：数据集成及共享（核心技术：数据模型、数据独立性）  数据库系统管理特点：全组织的复杂数据结构，数据冗余度小易扩充，数据和程序的独立性、映像功能、统一的数据控制、最小存取单位是数据项  数据库中模型分为两类：概念模型（信息模型）、数据模型（层次、网状、关系模型）。概念模型用于现实世界到信息世界，数据模型以计算机系统的形式对数据建模。  数据模型：抽象和表示现实世界中的是数据和信息。（严格定义的概念集合） 概念模型：基于信息世界主要概念，表达应用中各种语义。  概念模型基本概念：  实体（Entity）：客观存在并可区分的事物；  属性（Attribute）：实体所具有的某一特性；  码（Key）：唯一标识实体的属性集；  域（Domain）：某个/些属性的取值范围（一组具有相同数据类型值的集合）；  实体型（Entity...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/03/15/OS/Lab0%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="Lab0实验报告"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/9.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-15</div><div class="info-item-2">Lab0实验报告</div></div><div class="info-2"><div class="info-item-1">Lab0实验报告思考题Thinking 0.1   git commit -m &quot;22373347&quot;   不一样，第一次执行命令之前README.txt文件是新增文件，执行之后暂存区以含有该文件，所以再次执行会显示为修改后文件。  Thinking 0.2 add the file对应git add stage the file对应git add commit对应git commit  Thinking 0.3 git checkout -- print.c git reset HEAD print.c + git checkout -- print.c git rm --cached hello.txt  Thinking 0.4git reset --hard HEAD^和git reset --hard &lt;hash&gt;两条命令都可以进行回溯，其中HEAD^会回溯到上一条提交记录，&lt;hash&gt;会回溯到哈希值所指的提交记录；使用哈希值可以回溯到老版本，也可以在回溯到老版本之后重新回溯到新版本。 Thinking...</div></div></div></a><a class="pagination-related" href="/2025/03/15/OS/Lab2%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="Lab2实验报告"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/7.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-15</div><div class="info-item-2">Lab2实验报告</div></div><div class="info-2"><div class="info-item-1">Lab2实验报告思考题Thinking 2.1 编写c程序时，指针变量存储的地址是虚拟地址； 编写汇编程序时，lw、sw指令使用的是虚拟地址。  Thinking 2.2 链表操作多项操作具有重复性，使用宏定义封装部分代码，并在链表操作时多次使用，可以大大提高可重用性和简便性。  不同链表比较：  单向链表：可以很好的顺序进行，但是不可以访问当前元素之前的元素； 双向链表：既可以正向进行，也可以逆向进行，可以直接访问当前元素之前的和之后的元素，性能较好； 循环链表：可以很好的顺序进行，但是不可以直接访问当前元素之前的元素，需要循环查找（单向循环列表，双向循环列表性能与普通双向链表相当）；  本实验中设计的双向链表与经典双向链表不同，本实验中链表不能访问上一个元素，只能访问上一个元素的next指针；即本实验中链表无法访问上一个元素，只能改变上一个元素的连接关系。   Thinking 2.3按照实验设计，选择C选项设计方案最佳： 123456789101112struct Page_list&#123;    struct     &#123;        struct    ...</div></div></div></a><a class="pagination-related" href="/2025/03/15/OS/Lab1%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="Lab1实验报告"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/10.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-15</div><div class="info-item-2">Lab1实验报告</div></div><div class="info-2"><div class="info-item-1">Lab1实验报告思考题Thinking 1.1 x86原生工具链和mips交叉编译工具链对比：  x86原生工具链：  编译但未链接文件x86程序：   链接后文件x86程序：         mips交叉编译工具链：  编译但未链接mips程序：    链接后mips程序：      objdump传入参数：  -d：—disassemble[=symbol]，反汇编特定指令机器码的节；  -D：—disassemble-all，反汇编全部节代码；  -S：—source，代码段反汇编同时，将反汇编代码和源代码交替显示；  -g：—debugging，显示调试信息；  -l：—line-numbers，代码段反汇编同时，显示反汇编代码行数。     Thinking 1.2 解析/target/mos：    readelf解析readelf文件和hello文件：可见有多项因素会影响文件是否会被自定义readelf解析，如是大端项还是小端项，如文件位数（32位或64位）    Thinking...</div></div></div></a><a class="pagination-related" href="/2025/03/15/OS/Lab3%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="Lab3实验报告"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/5.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-15</div><div class="info-item-2">Lab3实验报告</div></div><div class="info-2"><div class="info-item-1">Lab3实验报告思考题Thinking 3.1 UVPT是kuseg保存用户当前进程页表信息的虚拟地址区，e-&gt;env_pgdir是进程页目录对应的物理地址。PADDR(e-&gt;env_pgdir) | PTE_V将对应页目录物理地址转换为页表项物理地址并赋予页表有效性信息，存入当前进程对应的pgdir中。  Thinking 3.2 void *data主要在函数load_icode_mapper、load_icode、load_elf中直接使用或间接涉及。这个参数不可以去除，在产生mapper的时候，可能需要多种额外数据辅助映射，因此需要添加。  Thinking 3.3 从binary无法获得ehdr 从binary + ph_off无法获得ph或获得的ph-&gt;p_type是PT_LOAD  Thinking 3.4 虚拟地址  Thinking 3.5 0,1,2,3号异常函数均在/kern/genex.S文件中实现 0号异常使用汇编程序，1,2,3号异常函数均使用宏定义进行描述  Thinking...</div></div></div></a><a class="pagination-related" href="/2025/03/15/OS/Lab4%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="Lab4实验报告"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/11.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-15</div><div class="info-item-2">Lab4实验报告</div></div><div class="info-2"><div class="info-item-1">Lab4实验报告思考题Thinking 4.1 进入内核态时首先使用SAVE_ALL函数将sp寄存器数据存入k0、k1中，同时使用sp的数据将通用寄存器数据压栈，存入环境控制块中，再次使用时将其出栈即可。 不可以，在调用过程中，将系统调用号存入了a0，因此寄存器中数据发生了改变。a1-a3寄存器没有显式改变，但也未规定不可以发生改变，因此出于正确性考虑，最优方法通过栈中数据使用。 函数中所有数据来源均是环境的数据栈，而数据栈中的数据均是在调用时传入的，因此sys函数与msyscall中参数相同。 修改了Trapframe-&gt;epc += 4，保证返回用户态时可以执行下一条指令；修改了Trapframe-&gt;regs[2] = returnRes，保证v0寄存器中存储返回结果。  Thinking 4.2 在设定env的各项参数时有可能出现错误，导致未正确设定env_id，这种env是不可以使用的。该函数在构建进程和查询使用进程的过程中均有使用。如果缺少判断，在实际使用时有可能出现通过envid寻找不到相应env的情况。  Thinking 4.3 (++i)...</div></div></div></a><a class="pagination-related" href="/2025/03/15/OS/Lab5%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/" title="Lab5实验报告"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/2.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-15</div><div class="info-item-2">Lab5实验报告</div></div><div class="info-2"><div class="info-item-1">Lab5实验报告思考题Thinking 5.1 引发问题：外设数据更新在缓存写入之后，因此若通过kseg0读入，会导致缓存部分数据在外设数据更新之后写入，导致数据丢失。 设备区别：串口设备访问频繁，IDE磁盘访问频率低，更像cache和内存的区别。  Thinking 5.2 文件结构体的定义： 12345678910struct File &#123;	char f_name[MAXNAMELEN]; // filename	uint32_t f_size; // file size in bytes	uint32_t f_type; // file type	uint32_t f_direct[NDIRECT];	uint32_t f_indirect;	struct File *f_dir; // the pointer to the dir where this file is in, valid only in memory.	char f_pad[FILE_STRUCT_SIZE - MAXNAMELEN - (3 + NDIRECT) * 4 -...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/loading.gif" data-original="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Mr-MysteryMan</div><div class="author-info-description">广告位招租</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-MysteryMan"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Mr-MysteryMan" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://blog.csdn.net/" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1234567@qq.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3"><span class="toc-number">1.</span> <span class="toc-text">编译器设计文档</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E7%BC%96%E8%AF%91%E5%99%A8%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text">参考编译器介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.1.</span> <span class="toc-text">总体结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.1.2.</span> <span class="toc-text">接口设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%BB%84%E7%BB%87"><span class="toc-number">1.1.3.</span> <span class="toc-text">文件组织</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E6%80%BB%E4%BD%93%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.2.</span> <span class="toc-text">编译器总体设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E7%BB%93%E6%9E%84-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">总体结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3%E8%AE%BE%E8%AE%A1-1"><span class="toc-number">1.2.2.</span> <span class="toc-text">接口设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%BB%84%E7%BB%87-1"><span class="toc-number">1.2.3.</span> <span class="toc-text">文件组织</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.3.</span> <span class="toc-text">词法分析设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.4.</span> <span class="toc-text">语法分析设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.5.</span> <span class="toc-text">语义分析设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.6.</span> <span class="toc-text">错误处理设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.7.</span> <span class="toc-text">代码生成设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.7.1.</span> <span class="toc-text">中间代码生成设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.7.2.</span> <span class="toc-text">目标代码生成设计</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96"><span class="toc-number">1.8.</span> <span class="toc-text">代码优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96"><span class="toc-number">1.8.1.</span> <span class="toc-text">中间代码优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96"><span class="toc-number">1.8.2.</span> <span class="toc-text">目标代码优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%87%E4%BB%A4%E9%80%89%E6%8B%A9"><span class="toc-number">1.8.2.1.</span> <span class="toc-text">指令选择</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E7%94%A8%E6%8C%87%E4%BB%A4%E5%88%A0%E9%99%A4"><span class="toc-number">1.8.2.2.</span> <span class="toc-text">无用指令删除</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B9%98%E9%99%A4%E6%B3%95%E4%BC%98%E5%8C%96"><span class="toc-number">1.8.2.3.</span> <span class="toc-text">乘除法优化</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B9%98%E6%B3%95%E4%BC%98%E5%8C%96"><span class="toc-number">1.8.2.3.1.</span> <span class="toc-text">乘法优化</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%99%A4%E6%B3%95%E4%BC%98%E5%8C%96"><span class="toc-number">1.8.2.3.2.</span> <span class="toc-text">除法优化</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%84%9F%E6%83%B3"><span class="toc-number">1.9.</span> <span class="toc-text">实验感想</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="编译器设计文档"><img src="/img/loading.gif" data-original="/img/wuhui/11.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="编译器设计文档"/></a><div class="content"><a class="title" href="/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="编译器设计文档">编译器设计文档</a><time datetime="2025-03-17T14:00:00.000Z" title="发表于 2025-03-17 22:00:00">2025-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/" title="数据库知识点整理"><img src="/img/loading.gif" data-original="/img/wuhui/6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库知识点整理"/></a><div class="content"><a class="title" href="/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/" title="数据库知识点整理">数据库知识点整理</a><time datetime="2025-03-17T14:00:00.000Z" title="发表于 2025-03-17 22:00:00">2025-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8B%E6%80%BB%E7%BB%93/" title="面向对象课程总结"><img src="/img/loading.gif" data-original="/img/wuhui/9.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="面向对象课程总结"/></a><div class="content"><a class="title" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8B%E6%80%BB%E7%BB%93/" title="面向对象课程总结">面向对象课程总结</a><time datetime="2025-03-17T08:00:00.000Z" title="发表于 2025-03-17 16:00:00">2025-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8BUnit4%E6%80%BB%E7%BB%93/" title="面向对象课程Unit4总结"><img src="/img/loading.gif" data-original="/img/wuhui/3.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="面向对象课程Unit4总结"/></a><div class="content"><a class="title" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8BUnit4%E6%80%BB%E7%BB%93/" title="面向对象课程Unit4总结">面向对象课程Unit4总结</a><time datetime="2025-03-17T06:00:00.000Z" title="发表于 2025-03-17 14:00:00">2025-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8BUnit3%E6%80%BB%E7%BB%93/" title="面向对象课程Unit3总结"><img src="/img/loading.gif" data-original="/img/wuhui/6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="面向对象课程Unit3总结"/></a><div class="content"><a class="title" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8BUnit3%E6%80%BB%E7%BB%93/" title="面向对象课程Unit3总结">面向对象课程Unit3总结</a><time datetime="2025-03-17T04:00:00.000Z" title="发表于 2025-03-17 12:00:00">2025-03-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Mr-MysteryMan</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="true" data-text="富强,民主,文明,和谐,平等,公正,法治,爱国,敬业,诚信,友善" data-fontsize="15px" data-random="true" async="async"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z\d\-\.\+]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(t.test(e.href)||r.test(e.href))&&(e.href=a.dataset.original)})});</script><script>(r=>{r.imageLazyLoadSetting.processImages=t;var a=r.imageLazyLoadSetting.isSPA,o=r.imageLazyLoadSetting.preloadRatio||1,d=i();function i(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(t){(a||t)&&(d=i());for(var e,n=0;n<d.length;n++)0<=(e=(e=d[n]).getBoundingClientRect()).bottom&&0<=e.left&&e.top<=(r.innerHeight*o||document.documentElement.clientHeight*o)&&(()=>{var t,e,a,o,i=d[n];e=function(){d=d.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).dataset.loaded||(t.hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(a=new Image,o=t.getAttribute("data-original"),a.onload=function(){t.src=o,t.removeAttribute("data-original"),t.setAttribute("data-loaded",!0),e&&e()},a.onerror=function(){t.removeAttribute("data-original"),t.setAttribute("data-loaded",!1),t.src=o},t.src!==o&&(a.src=o)))})()}function e(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",e),r.addEventListener("resize",e),r.addEventListener("orientationchange",e)})(this);</script></body></html>

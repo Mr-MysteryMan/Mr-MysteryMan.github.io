@@ -1,0 +1,810 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>数据库知识点整理 | hahaha</title><meta name="author" content="Mr-MysteryMan"><meta name="copyright" content="Mr-MysteryMan"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="数据库第一章 概述 文件系统：数据以文件形式保存在外存，存取以记录为单位，程序数据有一定独立性，文件与数据一一对应，数据共享性差冗余度大（存储消耗大，容易造成数据不一致性） 数据库系统：数据集成及共享（核心技术：数据模型、数据独立性）  数据库系统管理特点：全组织的复杂数据结构，数据冗余度小易扩充，数据和程序的独立性、映像功能、统一的数据控制、最小存取单位是数据项  数据库中模型分为两类：概念模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库知识点整理">
+<meta property="og:url" content="http://example.com/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/index.html">
+<meta property="og:site_name" content="hahaha">
+<meta property="og:description" content="数据库第一章 概述 文件系统：数据以文件形式保存在外存，存取以记录为单位，程序数据有一定独立性，文件与数据一一对应，数据共享性差冗余度大（存储消耗大，容易造成数据不一致性） 数据库系统：数据集成及共享（核心技术：数据模型、数据独立性）  数据库系统管理特点：全组织的复杂数据结构，数据冗余度小易扩充，数据和程序的独立性、映像功能、统一的数据控制、最小存取单位是数据项  数据库中模型分为两类：概念模型">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/wuhui/6.png">
+<meta property="article:published_time" content="2025-03-17T14:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-17T11:58:39.722Z">
+<meta property="article:author" content="Mr-MysteryMan">
+<meta property="article:tag" content="review">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/wuhui/6.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "数据库知识点整理",
+  "url": "http://example.com/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/",
+  "image": "http://example.com/img/wuhui/6.png",
+  "datePublished": "2025-03-17T14:00:00.000Z",
+  "dateModified": "2025-03-17T11:58:39.722Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Mr-MysteryMan",
+      "url": "http://example.com/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/logo.png"><link rel="canonical" href="http://example.com/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '数据库知识点整理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/post-background.css"><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-color: #efefef;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/loading.gif" data-original="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/wuhui/6.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">hahaha</span></a><a class="nav-page-title" href="/"><span class="site-name">数据库知识点整理</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">数据库知识点整理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-17T14:00:00.000Z" title="发表于 2025-03-17 22:00:00">2025-03-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-17T11:58:39.722Z" title="更新于 2025-03-17 19:58:39">2025-03-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">11.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>35分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><h2 id="第一章-概述"><a href="#第一章-概述" class="headerlink" title="第一章 概述"></a>第一章 概述</h2><ol>
+<li><p>文件系统：数据以文件形式保存在外存，存取以记录为单位，程序数据有一定独立性，文件与数据一一对应，数据共享性差冗余度大（存储消耗大，容易造成数据不一致性）</p>
+<p>数据库系统：数据集成及共享（核心技术：数据模型、数据独立性）</p>
+</li>
+<li><p>数据库系统管理特点：全组织的复杂数据结构，数据冗余度小易扩充，数据和程序的独立性、映像功能、统一的数据控制、最小存取单位是数据项</p>
+</li>
+<li><p>数据库中模型分为两类：概念模型（信息模型）、数据模型（层次、网状、关系模型）。概念模型用于现实世界到信息世界，数据模型以计算机系统的形式对数据建模。</p>
+</li>
+<li><p>数据模型：抽象和表示现实世界中的是数据和信息。（严格定义的概念集合）</p>
+<p>概念模型：基于信息世界主要概念，表达应用中各种语义。</p>
+</li>
+<li><p>概念模型基本概念：</p>
+<ul>
+<li><p>实体（Entity）：客观存在并可区分的事物；</p>
+</li>
+<li><p>属性（Attribute）：实体所具有的某一特性；</p>
+</li>
+<li><p>码（Key）：唯一标识实体的属性集；</p>
+</li>
+<li><p>域（Domain）：某个/些属性的取值范围（一组具有相同数据类型值的集合）；</p>
+</li>
+<li><p>实体型（Entity Type）：表示一类实体，用实体名和实体属性来表示；</p>
+</li>
+<li><p>联系（Relation）：实体之间的相互关联，分为一对一、一对多、多对多。</p>
+</li>
+</ul>
+</li>
+<li><p>E-R图：描述现实世界的信息及信息之间的联系。用矩形表示实体型，椭圆表示实体属性，菱形表示实体间联系。</p>
+<p>联系的语义扩充： 存在依赖：实体型B如果依赖实体型A的存在才能存在，称实体型B为弱实体。（如人与子女）</p>
+<p>​                                标识依赖：实体型必须通过与其联系的另一实体型共同标识才能确定其唯一性。（如学校与学生）</p>
+<p>​                                实体的子类：子类继承父类属性，并附加新属性。</p>
+</li>
+<li><p>数据模型三要素：数据结构、数据操作、完整性约束。</p>
+<p>数据结构：包含对象的类型、内容、性质，以及对象之间的联系。（数据静态特性）</p>
+<p>数据操作：对各种对象的实例数值允许执行的操作集合，包括操作及操作规则，主要有检索和更新两大类。（数据动态特性）</p>
+<p>数据约束条件：完整性规则（数据模型中数据极其联系所有的制约和依存规则）的集合。</p>
+</li>
+<li><p>数据模型分类：层次模型（树结构）、网状模型（图结构）、关系模型（二维表）。</p>
+</li>
+<li><p>数据独立性：应用程序与数据结构之间相互独立的关系。</p>
+<p>数据的物理独立性：数据存储结构变化时，数据逻辑结构不变，从而应用不变。</p>
+<p>数据的逻辑独立性：数据逻辑结构改变时应用不变。</p>
+</li>
+<li><p>数据库系统体系结构上具有三级模式两级映像的结构特征。</p>
+<p>三级模式：模式、外模式、内模式</p>
+<p>两级映像：外模式-模式，模式-内模式 </p>
+<p>结构：应用-外模式-模式-内模式-数据库</p>
+</li>
+<li><p>模式：用模式DDL（Data Description Language）写出的一个数据库逻辑定义的全部语句，也称逻辑模式、概念模式，数据库中全体数据的逻辑结构和特性的描述。三级模式的核心，只定义数据的逻辑结构（数据记录结构、数据之间的联系）、数据安全性完整性要求，不涉及数据的具体处理（具体语言和程序）。</p>
+</li>
+<li><p>外模式：用外模式DDL定义，也称子模式、用户模式，是个别用户的数据视图。通常是模式的子集，对应于应用（一个应用只能启用一个外模式）。</p>
+</li>
+<li><p>内模式：用内模式DDL定义，也称存储模式，是数据在数据库系统内部的表示。</p>
+</li>
+<li><p>外模式-模式映像：通过改变映像适应模式变化，使得外模式不变。（数据的逻辑独立性）</p>
+<p>模式-内模式映像：通过改变映像适应内模式变化，使得模式不变。（数据的物理独立性）</p>
+</li>
+<li><p>三级模式两级映像可以保障数据独立性、简化用户接口、有利于数据共享、有利于数据安全保密。</p>
+</li>
+<li><p>DBMS：数据库管理系统，在操作系统支持下控制。</p>
+<p>功能：数据定义、数据存取、数据库运行管理、数据组织管理存储、数据库建立维护</p>
+<p>DDL：数据定义语言； DML：数据操纵语言； DCL：数据管理语言。</p>
+</li>
+<li><p>DBA：建库用库改进，随时监测库性能。</p>
+</li>
+</ol>
+<h2 id="第二章-关系数据库"><a href="#第二章-关系数据库" class="headerlink" title="第二章 关系数据库"></a>第二章 关系数据库</h2><ol>
+<li><p>关系：笛卡尔积$D_1\times D_2 \times … \times D_n$的子集称为在域上的关系，用$R(D_1, D_2,…,D_n)$表示， $R$ 是关系的名字， $n$ 是关系的目或度。</p>
+</li>
+<li><p>关系可以表示为二维表，每一行是一个元组，每一列是一个域。</p>
+</li>
+<li><p>属性：每个列附加一个名称，且属性的名字是唯一的。</p>
+</li>
+<li><p>关系的性质：</p>
+<ul>
+<li>列是同质的，每一列中分量来自同一域，是同一类型数据；</li>
+<li>不同列可以来自同一域，不同列必须有不同属性名；</li>
+<li>列顺序行顺序无关紧要；</li>
+<li>每一分量必须是不可再分的数据。（满足这一条件称作满足第一范式<code>1NF</code>的）</li>
+</ul>
+</li>
+<li><p>关系模型的数据结构是关系（二维表）。</p>
+</li>
+<li><p>候选码：关系中某一组属性，其值唯一标识了一个元组，并具有最小性，则称该属性组为候选码。</p>
+<p>主码：若关系中有多个候选码，则选定一个候选码为主码。</p>
+<p>全码：若关系中仅有一个候选码，且这个候选码包含关系的所有属性，则称为全码。</p>
+<p>所有候选码中的属性称为主属性，不包含在任何候选码中的属性称为非主属性。</p>
+</li>
+<li><p>关系模式：关系的描述称为关系模式，可表示为 $R(U,D,dom,F)$ ，$U$表示属性名集合，$D$表示属性来自域的集合，$dom$表示属性向域的映射集合，$F$表示属性间数据依赖关系集合。也可简记为$R(A_1,A_2,…,A_n)$。</p>
+<p>关系模式是相对确定的，关系是变化的。关系是关系模式在某一时刻的状态或内容。</p>
+</li>
+<li><p>关系数据库的型：关系模式的集合构成关系数据库模式。</p>
+<p>关系数据库的值：关系的集合构成具体的关系数据库。</p>
+</li>
+<li><p>关系模型的完整性约束：实体完整性，参照完整性，用户定义完整性。</p>
+<p>实体完整性：必须有属性或属性组合作为主码，主码值不可为空或部分为空（不在域内的值）。</p>
+<p>参照完整性：F是关系R的一个非主码属性，如果其与关系S的主码K相对应（两个码定义于一个域上），则称F是R的外码，且R与S可能是同一关系。R中每一元组的F值等于S中某一元组的K值，或为空。（实际上是关系相同对象的对应）</p>
+<p>用户定义完整性：用户针对具体的应用环境定义的完整性约束条件。</p>
+</li>
+<li><p>关系模型的数据操作：操作方式特点是集合操作，操作对象与结果都是集合。操作基础是关系运算（代数方式，逻辑方式）。</p>
+</li>
+<li><p>关系演算（逻辑方式）： 元组关系演算：${t\,|\,\Phi(t)}$，$t$为元组</p>
+<p>​                                            域关系演算：${x_1,x_2,…,x_k\,|\,\Phi(x_1,x_2,…,x_k)}$，$x_1,x_2,…,x_k$为域变量</p>
+</li>
+<li><p>关系代数（代数方式）： 常规：并，交，差，笛卡尔积</p>
+<p>​                                            特有：选择，投影，连接，自然连接，求商</p>
+</li>
+<li><p>选择：在关系中选择满足给定条件的元组。（$\sigma_{F}(R)$）</p>
+</li>
+<li><p>投影：从关系中取出若干属性，删去重复元组组成新关系，即取出若干元组不重复的列。（$\Pi_{A_1,A_2,…,A_n}(R)$）</p>
+</li>
+<li><p>连接：关系R和S在属性X和Y上的连接，从两关系笛卡尔积上选择X和Y间满足比较条件$\theta$的元组。（$R \underset{X\theta Y}{\Join} S$）</p>
+<ul>
+<li>$\theta$为$=$时，是等值连接</li>
+<li>$\theta$为$&gt;$时，是大于连接</li>
+<li>$\theta$为$&lt;$时，是小于连接</li>
+</ul>
+</li>
+<li><p>自然连接：关系R和S从笛卡尔积上选择相同属性列上取值相等的元组，并删去相同属性列。（$R \Join S$）</p>
+</li>
+<li><p>求商：关系$R(X,Y)$和关系$S(Z)$，其中$Y$、$Z$具有相同属性数。商是$R$在$X$上投影的子集，该集合满足和$S(Z)$的笛卡尔积包含在$R(X,Y)$中。（$R \div S$）</p>
+</li>
+<li><p>元组关系运算：表示为${t\,|\,\Phi(t)}$。其中$t$为元组，若元组变量前有全称量词$\forall$或存在量词$\exists$，则称为约束元组变量，反之称为自由元组变量（$t[i]$为该元组的第$i$个分量）。$\Phi(t)$为元组关系演算公式，由原子公式和运算符组成，简称公式。</p>
+<p>运算符次序：算术比较运算符&gt;$\exist$&gt;$\forall$&gt;$\urcorner$&gt;$\and$&gt;$\or$</p>
+</li>
+<li><p>域关系运算：表示为${x_1,x_2,…,x_k\,|\,\Phi(x_1,x_2,…,x_k)}$。其中$x_i$为域，若域变量前有全称量词$\forall$或存在量词$\exists$，则称为约束域变量，反之称为自由域变量。</p>
+</li>
+<li><p>安全运算：关系运算中不产生无限关系和无穷验证的运算（其表达式称为安全表达式，其限制称为安全约束）。</p>
+</li>
+<li><p>关系代数是安全运算，关系演算则不一定是。</p>
+</li>
+<li><p>关系运算中通常采用的安全约束方法是：对运算式$\Phi$定义一个有限符号集$DOM(\Phi)$，使表中所有元素都属于该有限集。</p>
+</li>
+</ol>
+<h2 id="第三章-关系数据库标准语言"><a href="#第三章-关系数据库标准语言" class="headerlink" title="第三章 关系数据库标准语言"></a>第三章 关系数据库标准语言</h2><ol>
+<li><p>分类：DDL（定义），DML（操纵，有联机交互方式和宿主语言方式），DCL（控制）。</p>
+</li>
+<li><p>特点：一体化（将所有功能融到一种查询语言），非过程化（只提干什么），面向集合的操作方式，可独立可与主语言嵌套使用。</p>
+</li>
+<li><p>优越性原因：数据结构简单，建立在关系运算数学基础上。</p>
+</li>
+<li><p>优点：</p>
+<ul>
+<li>严格的数学概念，有严格设计理论；</li>
+<li>概念单一，操作语言一致性；</li>
+<li>数据结构简单直观，语言简洁；</li>
+<li>存取对用户透明，数据独立性高，安全保密性高。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>查询效率低，不如层次、网状；</li>
+<li>查询需要优化，开发难度增加。</li>
+</ul>
+</li>
+<li><p>基本表：实际存在，每个表可用一个存储文件表示。</p>
+</li>
+<li><p>导出表：从基本表导出，有视图和快照。（视图是虚表，不实际存储在数据库中；快照指某一时间点数据库中表的数据）</p>
+</li>
+<li><p>查询：<code>SELECT-FROM-WHERE</code> （<code>SELECT</code>后加<code>DISTINCT</code>去除重复行；<code>WHERE</code>后是选取条件）</p>
+</li>
+<li><p>比较运算符：<code>=</code>,<code>&gt;</code>,<code>&gt;=</code>,<code>&lt;</code>,<code>&lt;=</code>,<code>!=</code>, <code>BETWEEN AND</code>（在范围内）</p>
+</li>
+<li><p>排序检索：<code>ORDER BY</code> 列名 <code>ASC(升序)/DESC(倒序)</code>，作为最后一个子句出现。</p>
+<p>多属性排序：<code>ORDER BY A ASC, B DESC</code></p>
+</li>
+<li><p>连表检索：<code>FROM</code>后有多个表，<code>WHERE</code>后有连接条件和选取条件。</p>
+<p>表自连接：<code>FROM</code>后将表定义为不同名称，其余同上。</p>
+<blockquote>
+<p><strong>检索所有比小明年龄大的学生姓名、年龄。</strong></p>
+<p>SELECT X.SN，X.SA</p>
+<p>FROM S X，S Y</p>
+<p>WHERE X.SA&gt;Y.SA AND Y.SN=’小明’;</p>
+</blockquote>
+</li>
+<li><p>外连接：在连接谓词某一边加上*/+，强制在连接时另一表对应本表不存在的元组增加空行。</p>
+</li>
+<li><p>子查询/嵌套查询：子句可包含另一查询块，包含子查询的语句称为外部查询。</p>
+<p>普通子查询：子查询时与外部查询无关，可单独执行。（子查询不需要外查询值）</p>
+<p>相关子查询：外查询时列值作为检索条件条件值。（子查询需要外查询值）</p>
+<p>实际上相关子查询效率要低于普通子查询</p>
+</li>
+<li><p>如果子查询返回唯一值，则可以直接使用比较运算符；如果返回一组值，则需要使用<code>ANY</code>，<code>ALL</code>。</p>
+<p>可使用<code>IN</code>代替<code>=ANY</code>（以及<code>NOT IN</code>）</p>
+</li>
+<li><p>存在检索：<code>EXISTS</code>（子查询），当且仅当子查询结果为非空时为真。（以及<code>NOT EXISTS</code>，可用来表示全称）</p>
+</li>
+<li><p>并差交：<code>UNION</code>，<code>MINUS</code>，<code>INTERSECT</code>（并差交，操作对象必须是同类关系）</p>
+</li>
+<li><p>库函数检索：<code>COUNT()</code>对列值计数，<code>COUNT(*)</code>对全部行计数；<code>SUM()</code>对数值列求和；<code>AVG()</code>对数值列求平均值；<code>MAX()</code>对数值列求最大值；<code>MIN()</code>对数值列求最小值。</p>
+<p>库函数只能出现在<code>SELECT</code>语句或<code>HAVING</code>语句。</p>
+</li>
+<li><p>分组检索：<code>GROUP BY 列名 [HAVING condition]</code>，每组在分组属性列上具有相同值，对每一组执行<code>SELECT</code>操作，出现在<code>WHERE</code>语句后。（<code>HAVING</code>是对分组后每组的值进行限制）</p>
+</li>
+<li><p><code>SELECT</code>中允许存在属性列、常数、库函数、算术运算符$+-*/$等组成的算术表达式，检索结果数据项名可用表达式表示或别名表示。</p>
+</li>
+<li><p>部分匹配查询：<code>列名 LIKE/NOT LIKE string</code>，列名必须为字符型或变长字符型，string可包含两种特殊符号%：任意0个或多个字符，_:任意一个字符。</p>
+</li>
+<li><p>派生表：当子查询出现在<code>FROM</code>语句中，子查询生成的表称为临时派生表。使用<code>AS definition</code>对该表定义。</p>
+</li>
+<li><p>定义：操作：<code>CREATE</code>，<code>DROP</code>，<code>ALTER</code></p>
+<p>​            表类型：<code>Table</code>（表），<code>Index</code>（索引），<code>View</code>（视图）</p>
+</li>
+<li><p>索引：主键+指针，指向表中数据，增加查询效率</p>
+</li>
+<li><p>视图：虚表，内存中不存在。使用时从数据字典中取出视图定义，与用户查询结合，对基本表查询（视图消解）。</p>
+<p>作用：简化用户操作，使用户从多种角度看待，逻辑独立性，对数据提供安全保护。</p>
+</li>
+<li><p>插入：<code>INSERT INTO 表 VALUES</code></p>
+<p>修改：<code>UPDATE 表 SET 值 WHERE 条件</code></p>
+<p>删除：<code>DELETE FROM 表 WHERE 条件</code></p>
+</li>
+<li><p>数据控制： 授权：<code>GRANT 权限 ON 授权范围 TO 用户/角色</code></p>
+<p>​                    收权：<code>REVOKE 权限 ON 授权范围 FROM 用户</code></p>
+</li>
+<li><p>空值：可初始化或赋予某个属性为空值，空值与任何值运算结果为空值，与任何值比较结果为<code>UNKNOWN</code></p>
+<p>空值的判断：<code>IS NULL</code></p>
+</li>
+<li><p>嵌入式SQL：多采用预编译的方法处理，SQL语句翻译为主语言源码，按主语言通常方式进行编译连接为可执行代码。</p>
+</li>
+<li><p>动态SQL允许程序运行过程中临时组装SQL语言。</p>
+</li>
+<li><p>ODBC(OPEN DATA BASE CONNECT)、JDBC(JAVA DATA BASE CONNECT)：提供api接口，允许各种SQL语言使用。</p>
+</li>
+</ol>
+<h2 id="第四章-数据库保护"><a href="#第四章-数据库保护" class="headerlink" title="第四章 数据库保护"></a>第四章 数据库保护</h2><ol>
+<li><p>数据库安全性控制，数据库完整性控制</p>
+</li>
+<li><p>安全性：保护数据库防止非法使用造成数据泄露、更改和破坏。（有权用户获得正确数据，无权用户无法获得数据）</p>
+</li>
+<li><p>用户标识和认证是系统提供的最外层安全保护措施。（常用用户名和口令）</p>
+</li>
+<li><p>存取控制：确保合法用户在指定权限内使用和访问数据。（包括用户权限定义和合法权限检查，组成DBMS的安全子系统）</p>
+</li>
+<li><p>存取控制方法： 自主存取控制：不同用户对于同一对象有不同权限，用户可以将权限赋予其他用户。</p>
+<p>​                            强制存取控制：对于任意用户，只有具有相关权限的用户可以存取。</p>
+</li>
+<li><p>自主存取控制：根据预先定义的用户权限（用户对数据对象允许执行的数据类型，由数据对象和操作类型组成）进行存取控制。</p>
+<p>对于用户存取权限的定义称为授权，授权时应指明用户名、数据对象名、允许的操作类型。</p>
+</li>
+<li><p>基于角色的存取控制：角色是一组相关权限的集合，将角色授予用户实现权限分配，用户访问时根据所拥有的角色权限进行存取控制。使用角色存取控制，可以简化权限管理复杂度。</p>
+</li>
+<li><p>SQL可授予两种权限：用户极权限（整个数据库），关系极权限（关系和视图）。</p>
+</li>
+<li><p>强制存取方法(MAC)：实体被分为主体和客体，主体为用户和用户进程，客体为文件基本表索引视图等。DBMS为每一个实体赋予一个敏感度标记(Label)，如绝密(TS)，机密(C)，秘密(S)，公开(P)。主体敏感度标记称为许可证级别，客体敏感度标记称为密级。</p>
+<p>通过对比主客体的敏感度标记，判断是否允许存取。主体敏感度大于等于客体敏感度时可以访问数据，主体敏感度等于客体敏感度时可以存储数据。</p>
+</li>
+<li><p>数据安全性控制的其它方法：</p>
+<ul>
+<li>视图机制：不同的用户定义不同的视图，可以将用户对数据的访问限制在一定的范围内。</li>
+<li>审计：将所有操作自动记录并放入审计日志，后续可根据日志查询访问记录。</li>
+<li>数据加密：根据一定的算法将原始数据（明文）变换为不可识别的格式（密文）。</li>
+</ul>
+</li>
+<li><p>完整性：数据的正确性（数据合法）和相容性（各表中相同对象数据自洽）。</p>
+<p>完整性关系到数据库是否可以正确反应物理世界。</p>
+</li>
+<li><p>数据完整性控制防止数据库中出现不合法数据，输出错误数据。</p>
+<p>数据安全性控制防止非法更改和访问数据。</p>
+</li>
+<li><p>完整性约束条件：施加在数据库数据上的语义约束条件，作用对象可以是元组、列、关系。</p>
+</li>
+<li><p>完整性约束可以分为静态约束（确定状态时应满足的约束）和动态约束（状态变化过程中应满足的约束）。</p>
+</li>
+<li><p>列级约束：动态是指修改列定义或列值时应满足的约束条件，静态是对列的取值域的说明。</p>
+<p>元组约束：动态是指修改元组值时元组中各个字段间需要满足的约束，静态是对一个元组的各个列之间关系的约束。</p>
+<p>关系约束：动态是指加在关系变化前后状态上的限制条件，静态是一个关系若干元组或若干关系间的联系约束。</p>
+</li>
+<li><p>数据库完整性控制应包括定义功能、检查功能、违约响应。</p>
+</li>
+<li><p>完整性约束条件按照完整性检查的时机分为立即执行约束（一条语句执行之后立即检查）和延迟执行约束（所有语句执行之后检查，若不合法则拒绝全部语句）。</p>
+</li>
+<li><p>一条完整性规则可以用一个五元组(Data, Operation, Assertion, Condition, Procedure)，分别指数据对象，数据操作，断言或语义约束，作用的谓词，违反完整性规则时触发的过程。</p>
+</li>
+<li><p>断言：CREATE ASSERTION name CHECK condition，使condition不为真的操作将被拒绝。</p>
+</li>
+<li><p>触发器(Trigger)：定义在关系上的一类由事件驱动的特殊过程，对表更新时，系统激活相应触发器，执行完整性控制，判断更新是否可以执行。</p>
+</li>
+</ol>
+<h2 id="第五章-关系数据理论"><a href="#第五章-关系数据理论" class="headerlink" title="第五章 关系数据理论"></a>第五章 关系数据理论</h2><ol>
+<li><p>数据依赖：一个关系内部属性值之间相互依赖又相互制约的关系。</p>
+<p>可分为函数依赖、多值依赖。</p>
+</li>
+<li><p>函数依赖：对于同一关系中两组属性$X$,$Y$，对于任一元组$s$,$t$，$t[X]=s[X]$时都有$t[Y]=s[Y]$（对于任意$X$，有且仅有一个$Y$与其对应），则称$X$函数决定$Y$，$Y$函数依赖于$X$，记作$X\rightarrow Y$，$X$叫做决定因素。</p>
+</li>
+<li><p>对于函数依赖$X\rightarrow Y$，如果$Y\subseteq X$，则称作平凡的函数依赖（即$Y$中属性全部包含于$X$中）；反之则成为非平凡的函数依赖。</p>
+</li>
+<li><p>函数依赖与属性间联系：1对1，互为函数依赖；1对多，1函数依赖于多；多对多，不存在函数依赖。</p>
+</li>
+<li><p>完全函数依赖：若$X\rightarrow Y$，对于$X$任意一个真子集$X^{‘}$，都不存在$X^{‘}\rightarrow Y$，记作$X \overset{f}{\rightarrow}Y$。</p>
+<p>部分函数依赖：若$X\rightarrow Y$，对于$X$存在一个真子集$X^{‘}$，使得$X^{‘}\rightarrow Y$，记作$X \overset{p}{\rightarrow}Y$。</p>
+<p>传递函数依赖：若$X\rightarrow Y$，$Y\rightarrow Z$，且不存在$Y\rightarrow X$，记作$X \overset{t}{\rightarrow}Z$。</p>
+</li>
+<li><p>函数依赖的逻辑蕴含：关系模式$R<U,F>$中，$U$表示属性名集合，$F$表示属性间数据依赖关系集合，$X$、$Y$是$R$的属性集合，如果从$F$中的函数依赖可以推出$X\rightarrow Y$，则称$F$逻辑蕴含$X\rightarrow Y$。</p>
+</li>
+<li><p>函数依赖集的闭包：$F$逻辑蕴含的所有函数依赖称为$F$的闭包（$F$和$F$可以推出的全部），记作$F^+$。</p>
+</li>
+<li><p>阿姆斯特朗公理系统：对于关系模式$R<U,F>$有如下规则：</p>
+<ul>
+<li>自反律：若$Y\subseteq X \subseteq U$，则$X\rightarrow Y$为$F$蕴含。</li>
+<li>增广律：若$X\rightarrow Y$为$F$蕴含，且$Z \subseteq U$，则$XZ\rightarrow YZ$为$F$蕴含。</li>
+<li>传递律：若$X\rightarrow Y$，$Y\rightarrow Z$为$F$蕴含，则$X\rightarrow Z$为$F$蕴含。</li>
+<li>合并规则：若$X\rightarrow Y$，$X\rightarrow Z$，则$X\rightarrow YZ$。</li>
+<li>为传递规则：若$X\rightarrow Y$，$WY\rightarrow Z$，则$WX\rightarrow Z$。</li>
+<li>分解规则：若$X\rightarrow Y$，$Z\subseteq Y$，则$X\rightarrow Z$。</li>
+</ul>
+</li>
+<li><p>属性集$X$关于函数依赖集$F$的闭包：$X_F^+ = {A|X\rightarrow A能由F根据Armstrong公理导出}$。</p>
+</li>
+<li><p>阿姆斯特朗公理系统是有效的、完备的。</p>
+<p>有效性：由$F$出发根据Armstrong公理推导出来的每个函数依赖一定在$F $所蕴含的函数依赖的全体之中；</p>
+<p>完备性：$F$所蕴含的函数依赖的全体中的每一个函数依赖，必定可以由$F$根据Armstrong公理导出。</p>
+</li>
+<li><p>完备性证明（第五章P35）</p>
+</li>
+<li><p>函数依赖集等价：$F^+ = G^+$，$F$和$G$等价，$F$覆盖$G$，$G$覆盖$F$。</p>
+</li>
+<li><p>最小依赖集（极小函数依赖集/最小覆盖）：</p>
+<ul>
+<li>$\forall (X \rightarrow A)$，必有$A$是单属性。（右部单属性）</li>
+<li>不存在$X\rightarrow A$使得$F$与$F-{X\rightarrow A}$等价。（无多余FD: Functional Dependency）</li>
+<li>不存在$X\rightarrow A$，$Z \sub X$，使得$F$与$F-{X\rightarrow A}\cup{Z\rightarrow A}$等价。（FD左部无多余属性）</li>
+</ul>
+</li>
+<li><p>函数依赖集极小化处理：每个$F$均等价于一个最小依赖集$F_m$。</p>
+</li>
+<li><p>范式：一个关系满足某个指定的约束集。</p>
+</li>
+<li><p>满足最低要求约束的关系称为第一范式，记为1NF。（关系只包含原子值，无表中表）</p>
+<p>满足每个非主属性完全依赖于码的第一范式称为第二范式，记为2NF。</p>
+<p>满足每个非主属性都不传递依赖于任何码的第二范式称为第三范式，记为3NF。</p>
+</li>
+<li><p>投影分解： 2NF：消除非主属性对码的部分依赖关系，即将对码是部份依赖的非主属性分割出来。</p>
+<p>​                    3NF：消除非主属性对码的传递依赖关系，即将对码是传递依赖的非主属性分割出来。</p>
+</li>
+<li><p>BCNF：每个非平凡函数依赖$X\rightarrow Y$，$X$必含有码的第一范式。</p>
+</li>
+<li><p>BCNF性质：非主属性均完全函数依赖于每个候选码；主属性均完全函数依赖于每个不包含他的候选码；没有任何属性完全函数依赖于非码的任何一组属性。</p>
+</li>
+<li><p>其他类型依赖：多值依赖，连接依赖，分层依赖，相互依赖。</p>
+</li>
+<li><p>多值依赖：设$R(U)$是属性集$U$上的一个关系模式，$X$、$Y$、$Z$是$U$的子集，并且$Z =U – X – Y$，关系模式$R(U)$中多值依赖$X→→Y$成立，当且仅当$R(U)$的任一关系$r$，给定的一对$(x，z)$值有一组Y的值，这组值仅仅决定于$x$值而与$z$值无关。</p>
+</li>
+<li><p>不存在非平凡的非函数依赖的多值依赖的BCNF称为第四范式，记为4NF。</p>
+</li>
+<li><p>规范化的基本思想是逐步消除数据依赖中不合适的部分，使数据库模式中各关系模式分离，一个关系只描述一个实体或实体间联系。（实质是概念的单一化）</p>
+</li>
+<li><p>规范化过程： 1NF→2NF：消除非主属性对码的部分函数依赖；</p>
+<p>​                        2NF→3NF：消除非主属性对码的传递函数依赖；</p>
+<p>​                        3NF→BCNF：消除主属性对码的部分和传递函数依赖；</p>
+<p>​                        1NF→BCNF：消除决定因素非码（$X\rightarrow Y$中的$X$不是码）的非平凡函数依赖；</p>
+<p>​                        BCNF→4NF：消除非平凡且非函数依赖的多值依赖。</p>
+</li>
+<li><p>范式间关系：$4NF \sub BCNF \sub 3NF \sub 2NF$。</p>
+</li>
+<li><p>模式分解：$F_i= {X→Y | X→Y\in F^+, XY \subseteq U_i}$，称$F_i$为$F$在$U_i$上的投影。</p>
+</li>
+<li><p>无损分解：对一模式分解 $\rho$，若任一关系等于其分解后所有投影的自然连接，则称为无损分解（即分解后不损失任何属性）。</p>
+</li>
+<li><p>无损分解的判定（第五章P70）</p>
+</li>
+<li><p>保持函数依赖性：分解后所有关系模式的依赖集的并集的闭包等于原依赖集的闭包，即不损失任何一个函数依赖。</p>
+</li>
+<li><p>模式分解原则：通过投影分解完成。</p>
+</li>
+<li><p>候选码的求解方法（第五章P86）</p>
+</li>
+</ol>
+<h2 id="第六章-数据库设计"><a href="#第六章-数据库设计" class="headerlink" title="第六章 数据库设计"></a>第六章 数据库设计</h2><ol>
+<li><p>数据库设计：对于给定的应用环境，设计并建立数据库逻辑结构和物理结构，以适应要求。（主要是设计出三级模式两级映像）</p>
+</li>
+<li><p>设计特点：数据设计和处理设计结合。</p>
+</li>
+<li><p>规范设计法：把设计过程划分为多个阶段，每个阶段只解决设计中部分问题。（迭代和逐步求精的过程）</p>
+<p>分为需求分析、概念结构设计、逻辑结构设计、物理结构设计、数据库实施、数据库运行和维护。</p>
+</li>
+<li><p>需求分析：对应用环境进行详细调查，收集支持系统目标的基础数据及其处理。包括用户所需功能、数据之间关系。</p>
+</li>
+<li><p>概念结构设计：通过对用户需求进行综合、归纳与抽象，形成独立于数据库逻辑结构与具体DBMS的概念模型，可以用E-R图等表示。</p>
+</li>
+<li><p>逻辑结构设计：将概念结构转换为某个DBMS所支持的数据模型，将逻辑结构转换成特定DBMS能处理的模式、子模式。</p>
+</li>
+<li><p>物理结构设计：设计数据库在物理设备上的存储结构和存取方法。一般分为两步：一是确定数据库的内模式；二是对物理结构进行时间与空间效率的评价。</p>
+</li>
+<li><p>数据库实施：建立数据库，用DBMS的DDL描述三级模式，调试产生目标模式；开发应用程序，组织数据入库并试运行。</p>
+</li>
+<li><p>数据库运行维护：在数据库正式运行时，由DBA执行对数据库经常性的维护工作，包括数据库转储与恢复、数据库控制、数据库性能监控、数据库的重组与重构。</p>
+</li>
+<li><p>六阶段形成的模式：</p>
+<p><img src="/img/loading.gif" data-original="/images/DB/数据库/设计基本步骤.png" alt="设计基本步骤" style="zoom:33%;" /></p>
+</li>
+<li><p>数据流图：以图形方式表示系统功能，数据在系统中的逻辑流向和逻辑变换过程。（数据和处理的关系）</p>
+<p>数据字典：数据集中说明，包括数据元素的名字含义等。（系统中各类数据）</p>
+</li>
+<li><p>E-R法：概念模型，用E-R图描述现实世界，将E-R图转化为相应数据模型。</p>
+<p>组成：实体、联系、属性。</p>
+<p>自顶向下分析需求，自底向上设计概念模型。首先设计出局部E-R图，整合并消除冲突，生成初步E-R图，消除冗余生成基本E-R图。</p>
+</li>
+<li><p>E-R图向关系模型的转换规则：一个实体型或一个关系（具有相同码的关系可以合并）转化为一个关系模式。弱实体类型转化为一个关系模式，并将被依赖关系添加到新关系中。</p>
+</li>
+<li><p>关系模式的优化：按照范式等级优化即可，进行合并和分解（水平分解元组，垂直分解属性）。</p>
+</li>
+<li><p>常用存取方法：索引、聚集、哈希。</p>
+</li>
+<li><p>索引：记录索引项，包含索引域、指针两个域。</p>
+<p>常用B+树索引，所有关键字都按递增次序从左到右安排在叶节点上，并且链接起来。B+树能同时进行随机查找和顺序查找。</p>
+</li>
+<li><p>聚集：把关系中某个属性/组(聚集键)值相同的记录集中存放在连续的物理块，称为聚集。一个关系只能参与一个聚集。</p>
+<p>经常进行连接操作的关系， 单个关系的某组属性经常进行相等比较可以构建聚集。</p>
+</li>
+<li><p>hash存储：将记录的关键字通过hash函数或hash表转换为地址。</p>
+<p>关系大小可预知且不变可以直接建立，关系大小动态改变需要DBMS提供动态hash存取方法。</p>
+</li>
+</ol>
+<h2 id="第七章-存储管理与索引"><a href="#第七章-存储管理与索引" class="headerlink" title="第七章 存储管理与索引"></a>第七章 存储管理与索引</h2><ol>
+<li><p>存储管理目标：最小化磁盘存取次数</p>
+<p>实现手段：在主存中保持尽量多的块，使得上层要访问块时他在主存中概率最大。</p>
+</li>
+<li><p>数据库存储结构主要是文件的组织结构。</p>
+</li>
+<li><p>数据库中表映射到文件（记录的序列），存储到若干磁盘块上。</p>
+<p>一个块上可以存储多条记录，而一条记录只能存储到单个块中。每条记录有唯一的标识ID，由块号和记录在块中的位置组成。</p>
+</li>
+<li><p>数据库存储采用页块结构，使用页表存储块。</p>
+</li>
+<li><p>堆文件组织：记录可以存放在文件空间中的任何位置。可以采取链表方式（维护header页，存储空白页链表头指针和数据页链表头指针，每页记录当前包含的空槽数）和页目录方式（维护特殊页保存文件中数据页位置，记录每个页中空槽数）。</p>
+</li>
+<li><p>顺序文件组织：文件中记录按搜索码（用于在文件中查找记录的任意属性集合）排序排列。通过指针将记录链接起来，每个记录的指针指向按搜索码排列的下一条记录（可高效按搜索码处理记录）。</p>
+</li>
+<li><p>索引文件组织：索引是指记录的关键字与相应记录的存储地址的对照表，索引文件由主文件（可按主关键字有序组织或无序组织）和索引表（必须按关键字有序）构成。</p>
+</li>
+<li><p>散列文件组织：存储单位为桶，桶号可以是相对块号，最终可以转换为外存空间上的物理地址。使用哈希函数，将记录散列到桶上。如果记录个数超过一个桶的容量，即哈希函数出现冲突，形成一个主桶和多个溢出桶的列表。</p>
+<p>二次检索：先利用哈希函数确定项所在的主桶，再根据列表逐一找到每个溢出桶。</p>
+</li>
+<li><p>聚集文件组织：具有相同或相似属性值得记录存储于连续的磁盘块中，并获得聚集码（哪些记录被存储在一起）。</p>
+<p>多表聚集：将多个关系存储于一个文件中，在每个块中存储两个或更多关系得相关记录。</p>
+</li>
+<li><p>缓冲区：主存中存储磁盘块副本的区域。</p>
+<p>缓冲区管理器：负责缓存空间分配，内外存交换。</p>
+</li>
+<li><p>块/页是存储分配和数据交换的单位。</p>
+</li>
+<li><p>索引分类：排序索引、哈希索引（顺序与哈希函数确定的乱序）</p>
+</li>
+<li><p>聚集索引：索引域排列顺序与记录在排列顺序一致，也称主索引。</p>
+<p>非聚集索引：顺序不同，也称辅助索引。</p>
+</li>
+<li><p>稠密索引：对于文件中每一个搜索码值都有一个索引项。</p>
+<p>稀疏索引：只有部分搜索码值有索引项。（占空间小且维护代价低，定位记录慢）</p>
+</li>
+<li><p>多级索引：索引规模大，无法全部放入内存，建立外层索引（基本索引的稀疏索引）和内层索引（基本索引文件）。</p>
+</li>
+<li><p>B树：限制了每个节点放置关键字与指针的最小和最大个数。所有叶节点都分布在同一层上，关键字散布在各层上。</p>
+</li>
+<li><p>B+树：所有关键字都按递增顺序从左到右安排在叶节点上，并链接。能同时进行随机查找和顺序查找。</p>
+<p>查询：从树的根节点开始，通过比较查询码值和节点的 $k_i$ 值，向下遍历树直至到达包含指定值的叶节点。</p>
+<p>插入：查询到要插入的叶节点，若有空间插入该条记录，否则拆分（将原叶节点后一半差分出一个叶节点，并将新叶节点插入原叶节点的父节点中；向上递归处理，直至不再需要拆分）。</p>
+<p>删除： 查询到要删除的叶节点，删除该条记录，如果删除后叶节点中码个数低于下限，可能需要合并或重新分配（将原叶节点与其兄弟节点合并，并在父节点中删除原叶节点；如果合并时超出上限，则需要重新分配合并的码值）。</p>
+</li>
+<li><p>hash索引：使用哈希表实现从码到存储地址的映射。</p>
+<p>哈希表包括哈希函数（映射函数，速度快碰撞率低）和哈希方案（解决一个哈希值对应多条记录，常用溢出链接法：链表）两部分。</p>
+<p>静态哈希：哈希表不可变化，文件增大时访问效率降低，文件缩小时造成空间浪费。</p>
+<p>动态哈希：哈希表可变化，创建新的哈希表，把原表中的码值重新缔造哈希函数并存入新哈希表。</p>
+</li>
+</ol>
+<h2 id="第八章-查询处理与优化"><a href="#第八章-查询处理与优化" class="headerlink" title="第八章 查询处理与优化"></a>第八章 查询处理与优化</h2><ol>
+<li><p>四个阶段：分析、检查、优化、执行。</p>
+<p>词法分析、语法分析 =&gt; 语义分析、安全性检查、完整性检查、符号名转换 =&gt; 代数优化、物理优化 =&gt; 代码生成、代码执行</p>
+</li>
+<li><p>选择操作：全表扫描、索引扫描。</p>
+</li>
+<li><p>排序操作：内存中完全容纳，可采用快速排序等算法；内存中无法容纳，采用外排序-归并算法。</p>
+</li>
+<li><p>连接操作：嵌套循环（较小表为外循环，较大表为内循环）、索引连接（一个表按照连接属性建立索引，另一个表取连接属性与其比对）、排序合并（按照连接属性排序，两个表按连接属性比对）、hash-join（连接属性作为hash码，两个表散列到同一个hash文件）。</p>
+</li>
+<li><p>去重操作：使重复数据相邻，保留一个数据并去除其他。</p>
+</li>
+<li><p>投影操作：每个元组投影，再进行去重操作。</p>
+</li>
+<li><p>并差交：类似于排序-合并连接。</p>
+</li>
+<li><p>表达式的执行：物化方法（按次序每次只执行一个运算，运算结果存为临时表，一般需要写到磁盘上）和流水线方法（同时执行多个运算，将结果传递给下一个运算）。</p>
+</li>
+<li><p>查询优化目标：访问磁盘块数最少。</p>
+</li>
+<li><p>代数优化：改变代数表达式中操作的次序和组合。</p>
+<p>物理优化：存取路径和底层操作算法的选择。</p>
+</li>
+<li><p>查询计划：定义每个操作的算法以及操作执行的顺序。</p>
+</li>
+<li><p>关系代数表达式等价变换规则：</p>
+<ul>
+<li>连接、笛卡尔积的交换律： $A @ B = B @ A$ ；</li>
+<li>连接、笛卡尔积的结合律： $(A@B)@C = A@(B@C)$ ；</li>
+<li>投影的串接定律： $\Pi<em>{A_1, …, A_n}(\Pi</em>{B<em>1, …, B_m} (E)) = \Pi</em>{A_1, …, A_n}(E)$ ，其中 ${A_1, …, A_n} \subseteq {B_1, …, B_m}$ ；</li>
+<li>选择的串接定律：$\sigma<em>{F_1}(\sigma</em>{F<em>2} (E)) = \sigma</em>{F_1 \cap F_2}(E)$ ；</li>
+<li>选择与投影的交换律： $\Pi<em>{A_1, …, A_n}(\sigma_F (E)) = \sigma_F(\Pi</em>{A_1, …, A_n}(E))$ ；</li>
+<li>选择与笛卡尔积交换律：若 $F=F<em>1\cap F_2$ 代表选择的属性集合 $F$ 中含有 $E_1$ 中属性集合 $F_1$ 和 $E_2$ 中属性集合 $F_2$ ，则存在 $\sigma_F(E_1\times E_2) = \sigma</em>{F<em>1}(E_1)\times \sigma</em>{F_2}(E_2)$ ；</li>
+<li>选择与并差交、自然连接的分配律： $\sigma_F(E_1 @ E_2) = \sigma_F(E_1) @ \sigma_F(E_2)$ ；</li>
+<li>投影与笛卡尔积的分配律： $\Pi<em>{A_1, …, A_n, B_1, …, B_m}(E_1\times E_2) = \Pi</em>{A<em>1, …, A_n}(E_1) \times \Pi</em>{B_1, …, B_m}(E_2)$ ；</li>
+<li>投影与并的分配律： $\Pi<em>{A_1, …, A_n}(E_1\cup E_2) = \Pi</em>{A<em>1, …, A_n}(E_1) \cup \Pi</em>{A_1, …, A_n}(E_2)$ 。</li>
+</ul>
+</li>
+<li><p>优化的一般准则：</p>
+<ul>
+<li>选择运算尽早执行。（减小中间关系-减少元组数据）</li>
+<li>投影运算尽早执行。（减小中间关系-减少属性数目）</li>
+<li>把投影运算和选择运算同时进行；把投影同其前或其后的双目运算结合起来。（减少扫描关系的次数）</li>
+<li>把某些选择同在它前面要执行的笛卡尔积结合起来成为一个连接运算。（把笛卡尔积与选择转换为连接）</li>
+<li>找出公共子表达式，把公共子表达式的结果写入中间文件，重复使用。（中间结果复用）</li>
+</ul>
+</li>
+<li><p>查询树优化：查询树是关系代数表达式的树型表示。类似于四元式的DAG图，构造出查询树够使用关系代数表达式等价变换规则。</p>
+<p>分组：双目运算和它的直系祖先 (选取、投影)为一组；双目运算后代直到叶子全是单目运算时并入该组。笛卡尔积的后面若不是与之可以合并的自然连接的等值选择时，其后代单独分为一组。</p>
+<p>生成查询代码时，每组节点的计算是程序中的一步。各步的顺序是任意的，只要保证任何一组的计算不会在其后代组之前计算。</p>
+</li>
+<li><p>物理优化：选择高效合理的操作算法或存取路径，得到优化的查询计划。</p>
+<p>常用方法：基于规则的启发式优化、基于代价估算的优化。</p>
+</li>
+<li><p>选择操作的启发式规则：小关系使用全表顺序扫描；大关系采用索引扫描、全表顺序扫描。</p>
+<p>连接操作的启发式规则：两个表都已经按照连接属性排序，使用排序-合并法；一个表在连接属性上有索引，使用索引连接法；连接属性上未建立索引未排序，且其中一个表较小，使用hash-join法；其余可使用嵌套循环法，选择较小的表为外循环表。</p>
+</li>
+<li><p>基于代价估算：利用数据库统计信息，计算各种操作算法的执行代价，选出具有最小代价的执行计划。</p>
+<p>统计信息包括：基本表的规模，基本表列信息（不同值个数、最大最小值、是否有索引、索引类型）、索引的具体信息</p>
+</li>
+<li><p>查询优化一般步骤：查询转换成语法树；查询树利用代数优化转换为优化后标准形式；启发式优化选择底层的操作算法与存取路径，生成查询计划；基于代价优化选取代价最小的。</p>
+</li>
+</ol>
+<h2 id="第九章-事务处理技术"><a href="#第九章-事务处理技术" class="headerlink" title="第九章 事务处理技术"></a>第九章 事务处理技术</h2><ol>
+<li><p>事务的概念：用户定义的数据库操作序列，不可分割的工作单位。</p>
+</li>
+<li><p>事务特性：原子性、一致性、隔离性、持久性。</p>
+</li>
+<li><p>利用数据库的并发控制与恢复机制保证事务的特性不被破坏。</p>
+</li>
+<li><p>数据库的恢复基本原理是冗余，即利用存储在其他地方的数据重建数据库。</p>
+</li>
+<li><p>恢复是通过数据库管理系统的恢复子系统完成的，数据转储与登录日志文件。</p>
+</li>
+<li><p>故障种类：事务内部故障、系统故障、介质故障、计算机病毒。</p>
+</li>
+<li><p>日志是用来记录事务对数据库更新操作的文件。</p>
+</li>
+<li><p>故障恢复策略：事务故障：UNDO；系统故障：UNDO+REDO；介质故障：恢复到最近一次转储，装入日志，重做已完成事务。</p>
+</li>
+<li><p>检查点技术：增加检查点记录（正执行事务清单，最近记录地址）。</p>
+</li>
+<li><p>恢复子系统操作：缓存日志记录写入日志文件；写入检查点记录；缓存的数据记录写入数据库；检查点记录地址写入重新开始文件。</p>
+</li>
+<li><p>并发控制提高吞吐量，减少平均响应时间。</p>
+</li>
+<li><p>并发控制问题：可能破坏数据一致性。（丢失更新、读出脏数据、无法重复读）</p>
+</li>
+<li><p>基本思想：合理调度，避免事务间干扰破坏一致性。</p>
+</li>
+<li><p>基本手段：封锁。（基本封锁两种：排他锁X锁、共享锁S锁）</p>
+</li>
+<li><p>三种封锁协议分别对应三种问题：一级对应丢失更新、二级对应读出脏数据、三级对应无法重复读。</p>
+</li>
+<li><p>一级封锁协议：事务对数据修改前必须加排他锁。</p>
+<p>二级封锁协议：增加读取数据前必须加共享锁。（读取完成释放）</p>
+<p>三级封锁协议：增加读取数据前必须加共享锁。（事务完成释放）</p>
+</li>
+<li><p>封锁对象大小称为封锁粒度。</p>
+</li>
+<li><p>粒度大，并发度低，结构简单，开销小。</p>
+</li>
+<li><p>多粒度封锁：一个系统中同时支持多种封锁粒度。考虑封锁开销和并发度以选择封锁粒度。</p>
+</li>
+<li><p>多粒度封锁协议：允许多粒度树中每个节点被独立加锁，其后续子节点也会被全部加锁。</p>
+</li>
+<li><p>意向锁：该节点的下层节点正在被加锁。（因此加锁时只检查对象和其上级节点）</p>
+</li>
+<li><p>三种意向锁：意向排他锁，意向共享锁，意向共享排他锁。</p>
+</li>
+<li><p>对对象加锁时应先向其上级节点加意向锁。</p>
+</li>
+<li><p>活锁指其他对象已获得锁，当前对象处于等待；死锁指互相等待对方的完成。</p>
+</li>
+<li><p>死锁预防：一次封锁法（一次将所有要使用的对象加锁，并发度降低）、顺序封锁法（规定一个顺序，难度大）。</p>
+</li>
+<li><p>死锁检测：超时法、等待图法。</p>
+</li>
+<li><p>死锁恢复：撤销一个处理死锁代价小的事务并重做这个事务。</p>
+</li>
+<li><p>可串行性：并发执行正确当且仅当其结果与按某一次序执行结果相同。</p>
+</li>
+<li><p>两段锁协议：对数据读写前事务要取得该数据的封锁；释放封锁后事务不再获得任何其他封锁。即事务分为获得锁和释放锁两个阶段。</p>
+</li>
+</ol>
+<h2 id="第十章-分布式数据库系统"><a href="#第十章-分布式数据库系统" class="headerlink" title="第十章 分布式数据库系统"></a>第十章 分布式数据库系统</h2><ol>
+<li><p>分布式数据库：一组分布在计算机网络不同节点的数据，每个节点具有独立处理能力，可执行局部应用，也可通过网络通信执行全局应用。</p>
+</li>
+<li><p>特点：数据独立性（逻辑和物理独立性）、集中与自治相结合的结构、适当增加数据冗余（不同节点可能存储相同数据）、全局一致性可串行性和可恢复性。</p>
+</li>
+<li><p>分布式数据库系统的模式结构：</p>
+<p><img src="/img/loading.gif" data-original="/images/DB/数据库/分布式模式结构.png" alt="分布式模式结构" style="zoom: 50%;" /></p>
+</li>
+<li><p>分片方式： 基本：水平分片、垂直分片；</p>
+<p>​                    复杂：混合分片、导出分片。</p>
+</li>
+<li><p>水平分片：按行分为若干不相交子集。</p>
+<p>垂直分片：按列分为若干不相干子集，通过连接恢复原关系（各片段都包含码）。</p>
+<p>导出分片：导出水平分片，分片条件不是关系本身属性而是其他关系属性，如学生课程关系按学生关系中的系属性分片。</p>
+<p>混合分片：混合三种方式，按一种分片方式分完后再按另一种方式分片。</p>
+</li>
+<li><p>分片方式应满足：完全性、不相交性、可重构性。</p>
+</li>
+<li><p>分布透明性包括：分片透明性（只对全局关系进行操作，不考虑切片）、位置透明性（不必了解片段存储场地及数据一致性）、局部数据模型透明性（不必了解局部场地上使用的数据模型）。</p>
+</li>
+<li><p>分布式查询分类：局部查询（仅本地）、远程查询（仅远程）、全局查询（均存在）。</p>
+</li>
+<li><p>分布式查询优化：减少查询开销（IO+CPU+通信，首要目标是减少通信开销），可分为分布优化（更重要）和局部优化。</p>
+</li>
+<li><p>连接查询的优化：半连接， $R \underset{A=B}{\ltimes} S = R \underset{A=B}{\Join} (\Pi_{B}(S))$ 。</p>
+</li>
+<li><p>分布事务处理：一个全局事务被划分为在多个节点上的子事务。</p>
+</li>
+<li><p>分布事务的原子性：组成该事务的全部子事务要么一起提交，要么一起回滚。</p>
+</li>
+<li><p>两段提交协议保证分布事务原子性。</p>
+<p>所有局部事务管理分为两类：一个协调者，多个参与者。</p>
+<p>分为两个阶段：第一阶段协调者向参与者发信息并接收返回，做出决定；第二阶段：参与者执行决定。</p>
+<p>发生故障时，各场地利用各自有关日志进行事务恢复。</p>
+</li>
+</ol>
+<p>​    </p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Mr-MysteryMan</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/">http://example.com/2025/03/17/DB/数据库/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://example.com" target="_blank">hahaha</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/review/">review</a><a class="post-meta__tags" href="/tags/SQL/">SQL</a></div><div class="post-share"><div class="social-share" data-image="/img/wuhui/6.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="编译器设计文档"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/11.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">编译器设计文档</div></div><div class="info-2"><div class="info-item-1">编译器设计文档参考编译器介绍本次实验预备阶段主要学习参考了经典的Pascal编译器，现进行一定的介绍。 总体结构课程组提供的Pascal编译器总体结构为词法分析、语法分析、错误处理、语义分析、代码生成和代码优化六个部分。 接口设计该编译器并未进行模块化设计，而是将各函数放在一个文件下，在调用时设定形参实参进行数据的交互。主要函数如下：  nextch 读取下一个字符 test 检查符号合法性 error 打印错误信息 typ处理类型 typedeclaration处理自定义类型   constant处理常量 adjustscale处理实数   variabledeclaration处理普通变量 procdeclaration处理过程和函数 parameterlist...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/03/15/Compiler/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" title="编译原理知识点整理"><img class="cover" src="/img/loading.gif" data-original="/img/wuhui/8.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-15</div><div class="info-item-2">编译原理知识点整理</div></div><div class="info-2"><div class="info-item-1">编译原理第一章 概论 低级语言：字位码、机器语言、汇编语言。与特定机器有关，功效高但使用复杂且易出错。 高级语言：C、Java等语言。不依赖具体机器，移植性好易维护。  源程序：汇编或高级语言编写的待翻译程序； 目标程序：目标语言编写的程序； 翻译程序：将源程序转换为目标程序的程序。  源程序使用汇编，目标程序是机器语言，此翻译程序就是汇编程序；源程序使用高级语言，此翻译程序就是编译程序。  编译过程指将高级语言程序翻译为目标语言程序的过程。  五个阶段：词法分析、语法分析、语义分析与生成中间代码、代码优化、生成目标程序。 七个逻辑部分：词法分析、语法分析、语义分析与生成中间代码、代码优化、生成目标程序、符号表管理、出错处理。  遍：对源程序（以及源程序中间形式）从头到尾扫描一次，并进行相应处理。  编译程序通常分为前端（分析，与源语言有关）和后端（综合，与目标机有关）。   第二章 文法与语言概念 文法/语法：对语言结构的定义与描述。  语法规则：描述句子的语法结构的规则。 用 ::=...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/loading.gif" data-original="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Mr-MysteryMan</div><div class="author-info-description">广告位招租</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-MysteryMan"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Mr-MysteryMan" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://blog.csdn.net/" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1234567@qq.com" target="_blank" title="Email"><i class="fas fa-envelope-open-text"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">数据库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0-%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">第一章 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.2.</span> <span class="toc-text">第二章 关系数据库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A0%87%E5%87%86%E8%AF%AD%E8%A8%80"><span class="toc-number">1.3.</span> <span class="toc-text">第三章 关系数据库标准语言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BF%9D%E6%8A%A4"><span class="toc-number">1.4.</span> <span class="toc-text">第四章 数据库保护</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E7%AB%A0-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E7%90%86%E8%AE%BA"><span class="toc-number">1.5.</span> <span class="toc-text">第五章 关系数据理论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E7%AB%A0-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.6.</span> <span class="toc-text">第六章 数据库设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E7%AB%A0-%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E4%B8%8E%E7%B4%A2%E5%BC%95"><span class="toc-number">1.7.</span> <span class="toc-text">第七章 存储管理与索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E7%AB%A0-%E6%9F%A5%E8%AF%A2%E5%A4%84%E7%90%86%E4%B8%8E%E4%BC%98%E5%8C%96"><span class="toc-number">1.8.</span> <span class="toc-text">第八章 查询处理与优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B9%9D%E7%AB%A0-%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E6%8A%80%E6%9C%AF"><span class="toc-number">1.9.</span> <span class="toc-text">第九章 事务处理技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%8D%81%E7%AB%A0-%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.10.</span> <span class="toc-text">第十章 分布式数据库系统</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="编译器设计文档"><img src="/img/loading.gif" data-original="/img/wuhui/11.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="编译器设计文档"/></a><div class="content"><a class="title" href="/2025/03/17/Compiler/%E7%BC%96%E8%AF%91%E5%99%A8%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" title="编译器设计文档">编译器设计文档</a><time datetime="2025-03-17T14:00:00.000Z" title="发表于 2025-03-17 22:00:00">2025-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/" title="数据库知识点整理"><img src="/img/loading.gif" data-original="/img/wuhui/6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据库知识点整理"/></a><div class="content"><a class="title" href="/2025/03/17/DB/%E6%95%B0%E6%8D%AE%E5%BA%93/" title="数据库知识点整理">数据库知识点整理</a><time datetime="2025-03-17T14:00:00.000Z" title="发表于 2025-03-17 22:00:00">2025-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8B%E6%80%BB%E7%BB%93/" title="面向对象课程总结"><img src="/img/loading.gif" data-original="/img/wuhui/9.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="面向对象课程总结"/></a><div class="content"><a class="title" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8B%E6%80%BB%E7%BB%93/" title="面向对象课程总结">面向对象课程总结</a><time datetime="2025-03-17T08:00:00.000Z" title="发表于 2025-03-17 16:00:00">2025-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8BUnit4%E6%80%BB%E7%BB%93/" title="面向对象课程Unit4总结"><img src="/img/loading.gif" data-original="/img/wuhui/3.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="面向对象课程Unit4总结"/></a><div class="content"><a class="title" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8BUnit4%E6%80%BB%E7%BB%93/" title="面向对象课程Unit4总结">面向对象课程Unit4总结</a><time datetime="2025-03-17T06:00:00.000Z" title="发表于 2025-03-17 14:00:00">2025-03-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8BUnit3%E6%80%BB%E7%BB%93/" title="面向对象课程Unit3总结"><img src="/img/loading.gif" data-original="/img/wuhui/6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="面向对象课程Unit3总结"/></a><div class="content"><a class="title" href="/2025/03/17/OO/2024%E6%98%A5-OO%E8%AF%BE%E7%A8%8BUnit3%E6%80%BB%E7%BB%93/" title="面向对象课程Unit3总结">面向对象课程Unit3总结</a><time datetime="2025-03-17T04:00:00.000Z" title="发表于 2025-03-17 12:00:00">2025-03-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Mr-MysteryMan</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.3.5</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-show-text" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-show-text.min.js" data-mobile="true" data-text="富强,民主,文明,和谐,平等,公正,法治,爱国,敬业,诚信,友善" data-fontsize="15px" data-random="true" async="async"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div>
+        <style>
+            [bg-lazy] {
+                background-image: none !important;
+                background-color: #eee !important;
+            }
+        </style>
+        <script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z\d\-\.\+]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(t.test(e.href)||r.test(e.href))&&(e.href=a.dataset.original)})});</script><script>(r=>{r.imageLazyLoadSetting.processImages=t;var a=r.imageLazyLoadSetting.isSPA,o=r.imageLazyLoadSetting.preloadRatio||1,d=i();function i(){var t=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")),e=Array.prototype.slice.call(document.querySelectorAll("[bg-lazy]"));return t.concat(e)}function t(t){(a||t)&&(d=i());for(var e,n=0;n<d.length;n++)0<=(e=(e=d[n]).getBoundingClientRect()).bottom&&0<=e.left&&e.top<=(r.innerHeight*o||document.documentElement.clientHeight*o)&&(()=>{var t,e,a,o,i=d[n];e=function(){d=d.filter(function(t){return i!==t}),r.imageLazyLoadSetting.onImageLoaded&&r.imageLazyLoadSetting.onImageLoaded(i)},(t=i).dataset.loaded||(t.hasAttribute("bg-lazy")?(t.removeAttribute("bg-lazy"),e&&e()):(a=new Image,o=t.getAttribute("data-original"),a.onload=function(){t.src=o,t.removeAttribute("data-original"),t.setAttribute("data-loaded",!0),e&&e()},a.onerror=function(){t.removeAttribute("data-original"),t.setAttribute("data-loaded",!1),t.src=o},t.src!==o&&(a.src=o)))})()}function e(){clearTimeout(t.tId),t.tId=setTimeout(t,500)}t(),document.addEventListener("scroll",e),r.addEventListener("resize",e),r.addEventListener("orientationchange",e)})(this);</script></body></html>
