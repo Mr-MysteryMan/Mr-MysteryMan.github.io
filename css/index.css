@@ -2257,8 +2257,8 @@ maxWidth1200()
   transition: transform 0.5s ease-out !important;
 }
 .flexcard-flink-list > a {
-  width: calc(100% / 4 - 0.5rem);
-  height: 150px;
+  width: calc(100% / 3 - 0.5rem);
+  height: 180px;
   position: relative;
   display: block;
   margin: 0.5rem 0.25rem;
@@ -2324,7 +2324,7 @@ maxWidth1200()
   animation: coverIn 0.8s ease-out forwards;
 }
 .flexcard-flink-list > a .wrapper img {
-  height: 150px;
+  height: 180px;
   pointer-events: none;
 }
 .flexcard-flink-list > a .info {
@@ -2376,7 +2376,7 @@ maxWidth1200()
   pointer-events: none;
 }
 .flexcard-flink-list > a .info span {
-  padding: 20px 10% 60px 10%;
+  padding: 40px 10% 20px 10%;
   font-size: 16px;
   width: 100%;
   text-align: center;
