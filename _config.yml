@@ -6,9 +6,9 @@
 # `jekyll serve`. If you change this file, please restart the server process.
 
 # Site Settings
-title                    : "Lorem ipsum"
-description              : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ornare aliquet ipsum, ac tempus justo dapibus sit amet. "
-repository               : "RayeRen/acad-homepage.github.io"
+title                    : "Moran Sun"
+description              : "Easy to begin well, hard to persevere to the end. <br/> <font face=STSong>靡不有初，鲜克有终。</font>"
+repository               : "Mr-MysteryMan/Mr-MysteryMan.github.io"
 google_scholar_stats_use_cdn : true
 
 # google analytics
@@ -21,23 +21,23 @@ baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.ba
 
 # Site Author
 author:
-  name             : "Lorem ipsum"
-  avatar           : "images/android-chrome-512x512.png"
-  bio              : "Lorem ipsum College"
+  name             : "SUN Moran"
+  avatar           : "images/avatar.jpg"
+  bio              : "Beihang University"
   location         : "Beijing, China"
   employer         :
   pubmed           : 
   googlescholar    : "https://scholar.google.com/citations?user=YOUR_GOOGLE_SCHOLAR_ID"
-  email            : "Lorem@ipsum.com"
-  researchgate     :  # e.g., "https://www.researchgate.net/profile/yourprofile"
-  uri              :
+  email            : "smran18@buaa.edu.cn"
+  researchgate     : # e.g., "https://www.researchgate.net/profile/yourprofile"
+  uri              : #"https://mr-mysteryman.github.io/blog/"
   bitbucket        :
   codepen          :
   dribbble         :
   flickr           :
   facebook         :
   foursquare       :
-  github           : # e.g., "github username"
+  github           : "Mr-MysteryMan"
   google_plus      :
   keybase          :
   instagram        :
