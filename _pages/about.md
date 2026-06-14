@@ -17,23 +17,27 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-I am an undergraduate student at School of Computer Science and Engineering, Beihang University (BUAA), supervised by Prof. [Xianglong Liu](https://xlliu-beihang.github.io/) and Prof. [Tianlin Li](https://ltl7155.github.io/).
+I am an incoming Ph.D student at College of Computing and Data Science, Nanyang Technological University (NTU CCDS), supervised by Prof. [Yang Liu](https://personal.ntu.edu.sg/yangliu/).
+I received my B.Eng degree at School of Computer Science and Engineering, Beihang University (BUAA SCSE), supervised by Prof. [Xianglong Liu](https://xlliu-beihang.github.io/) and Prof. [Tianlin Li](https://ltl7155.github.io/).
 
-My research interests focus on **Trustworthy and Self-evolving Intelligent Systems**. Specifically, I am interested in large language model interpretability, reinforcement learning, metacognition agents, and embodied intelligence. 
+My research interests focus on **Trustworthy and Self-evolving Intelligent Systems**. 
+Specifically, I am interested in large language model interpretability, reinforcement learning, AI safety, and interdisciplinary AI. 
 
-If you are interested in potential collaborations or research discussions, please feel free to reach out via email.
+I always welcome discussions with researchers from diverse disciplines. Please feel free to reach out via email if you are interested in exchanging ideas or exploring potential collaborations.
 
 
 # 🔥 News
-- *2025.10*: 🎉🎉 1 paper (as **first author**) accepted by *IEEE IoTJ*. 
+- *2026.04*: 🎉🎉 I was admitted to NTU CCDS for Ph.D study.
+- *2025.10*: 🎉🎉 One paper (as **first author**) accepted by *IEEE IoTJ 2025*. 
 
 
 # 📖 Educations
-- *2022.09 - present*, B.Eng in Computer Science and Technology, Beihang University. 
+- *2026.08(expected)*, Ph.D in Artificial Intelligence, Nanyang Technological University
+- *2022.09 - 2026.06*, B.Eng in Computer Science and Technology, Beihang University
 
 
 # 💼 Internships
-- *2025.06 - 2025.09*, KV Storage Team, Infrastructure Department, Meituan.
+- *2025.06 - 2025.09*, KV Storage Team, Infrastructure Department, Meituan
 
 
 # 🎖 Honors and Awards
@@ -41,9 +45,11 @@ If you are interested in potential collaborations or research discussions, pleas
 - **First Prize**, China Undergraduate Mathematical Contest in Modeling (CUMCM), *2024*
 
 
-
 # 📝 Publications 
 ✉ *for corresponding authors*, \* *for co-first authors*
+- **How Emotion Shapes the Behavior of LLMs and Agents: A Mechanistic Study** \[[link](https://arxiv.org/abs/2604.00005)\] <br/>
+  **Moran Sun**, Tianlin Li<sup>✉︎</sup>, Yuwei Zheng, Zhenhong Zhou, Aishan Liu, Xianglong Liu, Yang Liu <br/>
+  *Preprint*
 - **Timeslot Aware Message Scheduling for CQF in Time-Sensitive Networking** \[[link](https://ui.adsabs.harvard.edu/abs/2026IITJ...13.2426S/abstract)\] <br/>
   **Moran Sun**, Xuan Zhou<sup>✉︎</sup>, Feng He <br/>
   IEEE Internet of Things Journal, *2025* <font color="red">(JCR Q1)</font>
@@ -53,5 +59,5 @@ If you are interested in potential collaborations or research discussions, pleas
 
 
 # 🌐 Academic Network
-- Advisors: [Xianglong Liu](https://xlliu-beihang.github.io/) (BUAA), [Tianlin Li](https://ltl7155.github.io/) (BUAA), [Feng He](https://shi.buaa.edu.cn/09426/zh_CN/index.htm) (BUAA)
+- Advisors: [Yang Liu](https://personal.ntu.edu.sg/yangliu/) (NTU), [Xianglong Liu](https://xlliu-beihang.github.io/) (BUAA), [Tianlin Li](https://ltl7155.github.io/) (BUAA), [Feng He](https://shi.buaa.edu.cn/09426/zh_CN/index.htm) (BUAA)
 - Collaborators: [Xuan Zhou](https://xingong.muc.edu.cn/info/1051/5565.htm) (MUC), [Ruoyu Han](https://foolish-han.github.io/) (BUAA)
