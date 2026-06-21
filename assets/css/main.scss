@@ -47,7 +47,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     border-bottom: 1px #efefef solid;
-    padding: 2em 0 2em 0;
+    padding: 1em 0;
     
 
     .paper-box-image{
@@ -70,15 +70,28 @@
     @include breakpoint($medium) {
         .paper-box-image{
             justify-content: left;
-            min-width: 200px;
-            max-width: 40%;
+            flex: 0 0 calc(200px + 1em);
+            max-width: calc(200px + 1em);
+            padding-left: 1em;
+            box-sizing: border-box;
             order: 1;
+
+            > div {
+                width: 200px;
+            }
+
+            img {
+                width: 100%;
+                max-width: 100%;
+                display: block;
+            }
         }
-        
+
         .paper-box-text{
             justify-content: left;
-            padding-left: 2em;
-            max-width: 60%;
+            padding-left: 1em;
+            flex: 1;
+            max-width: none;
             order: 2;
         }
 
