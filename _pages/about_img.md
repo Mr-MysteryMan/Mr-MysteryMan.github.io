@@ -47,18 +47,37 @@ I always welcome discussions with researchers from diverse disciplines. Please f
 
 # 📝 Publications 
 ✉ *for corresponding authors*, \* *for co-first authors*
-- **How Emotion Shapes the Behavior of LLMs and Agents: A Mechanistic Study** \[[link](https://arxiv.org/abs/2604.00005)\] <br/>
+
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">Preprint 2026</div><img src='images/publications/E-STEER.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+**How Emotion Shapes the Behavior of LLMs and Agents: A Mechanistic Study** \[[link](https://arxiv.org/abs/2604.00005)\] <br/>
   **Moran Sun**, Tianlin Li<sup>✉︎</sup>, Yuwei Zheng, Zhenhong Zhou, Aishan Liu, Xianglong Liu, Yang Liu <br/>
   *Preprint*
+</div>
+</div>
 
-- **Timeslot Aware Message Scheduling for CQF in Time-Sensitive Networking** \[[link](https://ui.adsabs.harvard.edu/abs/2026IITJ...13.2426S/abstract)\] <br/>
+
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">IEEE IoTJ 2025</div><img src='images/publications/TAMS.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+**Timeslot Aware Message Scheduling for CQF in Time-Sensitive Networking** \[[link](https://ui.adsabs.harvard.edu/abs/2026IITJ...13.2426S/abstract)\] <br/>
   **Moran Sun**, Xuan Zhou<sup>✉︎</sup>, Feng He <br/>
   IEEE Internet of Things Journal, *2025* <font color="red">(JCR Q1)</font>
+</div>
+</div>
 
-- **GTSNet: A Generalized Traffic Scheduler for Time-Sensitive Networking Based on Graph Neural Network** \[[link](https://ui.adsabs.harvard.edu/abs/2025ITII...21..208T/abstract)\] <br/>
+
+<div class='paper-box'><div class='paper-box-image'><div><div class="badge">IEEE TII 2024</div><img src='images/publications/GTSNet.png' alt="sym" width="100%"></div></div>
+<div class='paper-box-text' markdown="1">
+
+**GTSNet: A Generalized Traffic Scheduler for Time-Sensitive Networking Based on Graph Neural Network** \[[link](https://ui.adsabs.harvard.edu/abs/2025ITII...21..208T/abstract)\] <br/>
   Zelong Tian, Xuan Zhou, Zhen Liao, **Moran Sun**, Feng He<sup>✉︎</sup> <br/>
   IEEE Transactions on Industrial Informatics, *2024* <font color="red">(JCR Q1)</font>
-
+</div>
+</div>
 
 # 🌐 Academic Network
 I am deeply grateful to the advisors, mentors, and collaborators who have shaped my research journey.
