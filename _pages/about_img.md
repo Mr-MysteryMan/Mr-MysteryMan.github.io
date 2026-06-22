@@ -48,7 +48,6 @@ I always welcome discussions with researchers from diverse disciplines. Please f
 # 📝 Publications 
 ✉ *for corresponding authors*, \* *for co-first authors*
 
-
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">Preprint 2026</div><img src='images/publications/E-STEER.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
@@ -58,8 +57,6 @@ I always welcome discussions with researchers from diverse disciplines. Please f
 </div>
 </div>
 
-
-
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">IEEE IoTJ 2025</div><img src='images/publications/TAMS.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">
 
@@ -68,7 +65,6 @@ I always welcome discussions with researchers from diverse disciplines. Please f
   IEEE Internet of Things Journal, *2025* <font color="red">(JCR Q1)</font>
 </div>
 </div>
-
 
 <div class='paper-box'><div class='paper-box-image'><div><div class="badge">IEEE TII 2024</div><img src='images/publications/GTSNet.png' alt="sym" width="100%"></div></div>
 <div class='paper-box-text' markdown="1">

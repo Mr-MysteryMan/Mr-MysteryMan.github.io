@@ -47,6 +47,7 @@ I always welcome discussions with researchers from diverse disciplines. Please f
 
 # 📝 Publications 
 ✉ *for corresponding authors*, \* *for co-first authors*
+
 - **How Emotion Shapes the Behavior of LLMs and Agents: A Mechanistic Study** \[[link](https://arxiv.org/abs/2604.00005)\] <br/>
   **Moran Sun**, Tianlin Li<sup>✉︎</sup>, Yuwei Zheng, Zhenhong Zhou, Aishan Liu, Xianglong Liu, Yang Liu <br/>
   *Preprint*
