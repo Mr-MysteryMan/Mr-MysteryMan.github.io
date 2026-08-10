@@ -63,7 +63,6 @@ I always welcome discussions with researchers from diverse disciplines. Please f
 
 
 # 🌐 Academic Network
-I am deeply grateful to the advisors, mentors, and collaborators who have shaped my research journey.
-- Advisors: [Yang Liu](https://personal.ntu.edu.sg/yangliu/) (NTU), [Xianglong Liu](https://xlliu-beihang.github.io/) (BUAA)
-- Mentors: [Tianlin Li](https://ltl7155.github.io/) (BUAA), [Feng He](https://shi.buaa.edu.cn/09426/zh_CN/index.htm) (BUAA)
+I am deeply grateful to the mentors and collaborators who have shaped my research journey.
+- Mentors: [Yang Liu](https://personal.ntu.edu.sg/yangliu/) (NTU), [Xianglong Liu](https://xlliu-beihang.github.io/) (BUAA), [Tianlin Li](https://ltl7155.github.io/) (BUAA), [Feng He](https://shi.buaa.edu.cn/09426/zh_CN/index.htm) (BUAA)
 - Collaborators: [Xuan Zhou](https://xingong.muc.edu.cn/info/1051/5565.htm) (MUC), [Ruoyu Han](https://foolish-han.github.io/) (BUAA), [Shaohan Yu](https://shaohanyu.notion.site/) (NJU)
